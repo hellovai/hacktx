@@ -18,8 +18,8 @@ var joiner = function (socket) {
 		socket.pid = partner.id;
 		partner.join(room);
 		socket.join(room);
-		partner.emit('match', socket.github, partner.room);
-		socket.emit('match', partner.github, socket.room);
+		partner.emit('match', socket.github, room);
+		socket.emit('match', partner.github, room);
 		return true;
 	}
 	return false;

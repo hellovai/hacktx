@@ -21,7 +21,7 @@ var queue = globals.queue;
 var users = globals.users;
 
 io.sockets.on('connection', function (socket) {
-	socket.github = "ANON";
+	socket.gitub = "ANON";
 	socket.changeQ = false;
 	socket.pid = -1;
 	socket.qid = -1;

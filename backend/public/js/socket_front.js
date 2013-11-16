@@ -49,10 +49,18 @@ socket.on('match', function (partner, room) {
 	$("#chat-convo").html('');
 	writeMessage("Matched with " + partner, "alert");
 	$("#newPartner").attr('data', 'leave');
-	if(roomJoinAllow) {
-		webrtc.joinRoom(room);
-	}
+	joinRoom(room, 100);
 });
+
+function joinRoom(room, delay) {
+	if(roomJoinAllow) {
+		console.log("JOINING: " + room);
+		webrtc.joinRoom(room.toString());
+	} else if (delay > 6400)
+		return;
+	else
+		setTimeout(joinRoom(room, delay*2), delay);
+}
 // listener, whenever the server emits 'updatechat', this updates the chat body
 socket.on('updatechat', function (flag, data) {
 	var sender = "other";
