@@ -23,7 +23,8 @@ $(function(){
 		socket.emit('reqQuestion');
 	});
 	$('#runCode').click( function() {
-		socket.emit('runCode', $("#userCode").val());
+		console.log("CLK");
+		socket.emit('runCode', editor.doc.getValue());
 	});
 	// when the client hits ENTER on their keyboard
 	$('#data').keypress(function(e) {
@@ -80,5 +81,6 @@ socket.on('runRes', function(result, self) {
 	} else {
 		div = "pairResult-div";
 	}
-	$(div).html(result);
+	console.log(result);
+	$("#" + div).html(result);
 });

@@ -22,6 +22,8 @@
     <style type="text/css"></style>
     <script src="codemirror/addon/edit/matchbrackets.js"></script>
     <script src="codemirror/mode/python/python.js"></script>
+    <script src='https://swww.tokbox.com/webrtc/v2.0/js/TB.min.js'></script>
+
 
 </head>
 <body>
@@ -92,20 +94,27 @@
           	</div>
 
             <div class="col-lg-4" id="userCode-div" style="padding-left:20px;">
-            	<textarea id="userCode" name="userCode" rows="20" style="display:none;">#Python 2.7 code</textarea>
-            	<div id="userResult-div">
+            	<textarea id="userCode" name="userCode" rows="20" style="display:none;">#Python 2.7 code </textarea>
+              <div class="row">
+                <button type="button" class="btn btn-success btn-sm pull-right" id="runCode">  <span class="glyphicon glyphicon-play"> run </button>
+                <br><br>
+              </div>
+            	<div class="row" id="userResult-div" style="padding-left:20px;">
             		TEST
             	</div>
             </div><!--/span-->
 
             <div class="col-lg-4" id="pairCode-div" style="border-left:1pt solid #333333;">
               <textarea id="pairCode" name="pairCode" rows="20" style="display:none;">#Python 2.7 code</textarea>
+              <div id="pairResult-div">
+                TEST
+              </div>
             </div><!--/span-->
 
-            <div class="col-lg-3" id="video"style="border-left:1pt solid #333333;">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            <div class="col-lg-3" style="border-left:1pt solid #333333;">
+              <div class="row" id="video">
+              </div>
+
             </div><!--/span-->
       
           </div><!--/row-->
