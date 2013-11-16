@@ -12,8 +12,10 @@ var joiner = function (socket) {
 		if(part_id )
 		var partner = users[part_id];
 		var room = rand.generateKey(10);
-		socket.room = room;
 		partner.room = room;
+		socket.room = room;
+		partner.pid = socket.id;
+		socket.pid = partner.id;
 		partner.join(room);
 		socket.join(room);
 		partner.emit('match', socket.github);
@@ -23,20 +25,20 @@ var joiner = function (socket) {
 
 var leaver = function (socket) {	
 	if(socket.room) {
-		room = socket.room;
 		socket.leave(room);
-		partner = io.sockets.clients(room)[0];
-		if(partner) {
-			partner.leave(room);
-			partner.emit("solo");
+		if(socket.pid in users) {
+			users[socket.pid].leave(room);
+			users[socket.pid].emit('solo');
+			users[socket.pid].pid = -1;
 		}
+		socket.pid = -1;
 	}
 	socket.emit("left");
 }
 
 var sendMessage = function (socket, message) {
-	if(socket.room) {
-		socket.broadcast.to(socket.room).emit('updatechat', false, data);
+	if(socket.room && (socket.pid in users)) {
+		users[socket.pid].emit('updatechat', false, data);
 	}
 	socket.emit('updatechat', true, data);
 }

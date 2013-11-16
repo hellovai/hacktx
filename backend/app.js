@@ -4,6 +4,7 @@ var express = require('express')
 , io = require('socket.io').listen(server)
 , chat = require('./chat')
 , globals = require('./globals')
+, question = require('./question')
 , webrtc = require('socket.io').listen(8001);
 
 app.use(express.static(__dirname + '/public'));
@@ -28,7 +29,7 @@ io.sockets.on('connection', function (socket) {
 		chat.sendMessage(socket, data);
 	});
 	socket.on('question', function () {
-	
+		io.sockets.in(sockets.room).emit('updateQ', question.get());
 	});
 	socket.on('updatePartner', function () {
 
