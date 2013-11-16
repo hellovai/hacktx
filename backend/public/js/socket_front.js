@@ -1,5 +1,6 @@
 function writeMessage (string, cls) {
 	$("#chat-convo").append("<font class=\"" + cls + "\">" + string + "<br/></font>");
+	$("#chat-convo").scrollTop($("#chat-convo")[0].scrollHeight);
 }
 
 var socket = io.connect('http://localhost:8080');
