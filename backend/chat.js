@@ -1,5 +1,6 @@
 var globals = require('./globals')
-	, rand = require("generate-key");
+	, rand = require("generate-key")
+	, question = require("./question");
 var queue = globals.queue;
 var users = globals.users;
 
@@ -9,7 +10,6 @@ var joiner = function (socket) {
 		socket.emit('notif', "Finding you a partner...");
 	} else {
 		var part_id = queue.pop();
-		if(part_id )
 		var partner = users[part_id];
 		var room = rand.generateKey(10);
 		partner.room = room;
@@ -18,9 +18,11 @@ var joiner = function (socket) {
 		socket.pid = partner.id;
 		partner.join(room);
 		socket.join(room);
-		partner.emit('match', socket.github);
-		socket.emit('match', partner.github);
+		partner.emit('match', socket.github, socket.room);
+		socket.emit('match', partner.github, socket.room);
+		return true;
 	}
+	return false;
 }
 
 var leaver = function (socket) {	

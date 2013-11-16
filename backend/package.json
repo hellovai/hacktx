@@ -10,6 +10,7 @@
     "express": "latest",
     "socket.io": "latest",
     "socket.io-client": "latest",
-    "node-uuid": "latest"
+    "node-uuid": "latest",
+    "node-python":"latest"
   }
 }

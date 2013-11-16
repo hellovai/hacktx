@@ -39,6 +39,16 @@ socket.on('newq', function (question) {
 	$("#questionName").html(question);
 });
 
+socket.on('runRes', function(result, self) {
+	if(self) {
+		div = "userResult-div";
+	} else {
+		div = "pairResult-div";
+	}
+	$(div).html(result);
+});
+
+
 // on load of page
 $(function(){
 
@@ -54,7 +64,12 @@ $(function(){
 			$(this).attr('value', 'joining');
 		}
 	});
-	$('#newQuestion')
+	$('#newQuestion').click( function () {
+		socket.emit('reqQuestion');
+	});
+	$('#runCode').click( function() {
+		socket.emit('runCode', $("#userCode").val());
+	});
 	// when the client hits ENTER on their keyboard
 	$('#data').keypress(function(e) {
 		if(e.which == 13) {
