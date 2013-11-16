@@ -1,5 +1,24 @@
+var globals = require('./globals')
+, rand = require("generate-key");
+var queue = globals.queue;
+var users = globals.users;
+
 var joiner = function (socket) {
-	
+	if(queue.length == 0) {
+		queue.push(socket.id);
+		socket.emit('notif', "Finding you a partner...");
+	} else {
+		var part_id = queue.pop();
+		if(part_id )
+		var partner = users[part_id];
+		var room = rand.generateKey(10);
+		socket.room = room;
+		partner.room = room;
+		partner.join(room);
+		socket.join(room);
+		partner.emit('match', socket.github);
+		socket.emit('match', partner.github);
+	}
 }
 
 var leaver = function (socket) {	
@@ -16,9 +35,12 @@ var leaver = function (socket) {
 }
 
 var sendMessage = function (socket, message) {
-	
+	if(socket.room) {
+		socket.broadcast.to(socket.room).emit('updatechat', false, data);
+	}
+	socket.emit('updatechat', true, data);
 }
 
-module.exports = joiner;
-module.exports = leaver;
-module.exports = sendMessage;
+module.exports.joiner = joiner;
+module.exports.leaver = leaver;
+module.exports.sendMessage = sendMessage;
