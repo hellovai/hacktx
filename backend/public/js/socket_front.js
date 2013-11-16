@@ -1,6 +1,20 @@
 function writeMessage (string, cls) {
-	$("#chat-convo").append("<font class=\"" + cls + "\">" + string + "<br/></font>");
+	$("#chat-convo").append("<font class=\"message-" + cls + "\">" + string + "<br/></font>");
 	$("#chat-convo").scrollTop($("#chat-convo")[0].scrollHeight);
+}
+
+function resParse(datain) {
+	data = jQuery.parseJSON(datain);
+	var fin = "<ul>";
+	for (var i = 0; i < data.length; i++) {
+    	if(data[i].status) {
+    		fin = fin + '<li><div>CASE ' + i + ': <font class="pass">PASS</font></div></li>'
+    	} else {
+    		fin = fin + '<li><div>CASE ' + i + ': <font class="fail">FAIL</font><br /><font>Input:' + data[i].input + '</font><br /><font>Outpu:' + data[i].output + '</font></div></li>'
+    	}
+    	//Do something
+	}
+	return fin + "</ul>";
 }
 
 var socket = io.connect('http://www.mealmaniac.com:8080');
@@ -68,9 +82,9 @@ function joinRoom(room, delay) {
 }
 // listener, whenever the server emits 'updatechat', this updates the chat body
 socket.on('updatechat', function (flag, data) {
-	var sender = "other";
-	if(flag) sender = "self";
-	writeMessage(sender + ":" + data, "message");
+	var sender = "Partner";
+	if(flag) sender = "You";
+	writeMessage("<b class='c_" + sender + "'>" + sender + ": </b>" + data, "message");
 });
 
 socket.on('notif', function (data) {
@@ -87,7 +101,7 @@ socket.on('newq', function (question) {
 });
 
 socket.on('solo', function() {
-	writeMessage("You're partner left you!", "alert");
+	writeMessage("Your partner left you!", "alert");
 	if(roomJoinAllow)
 		webrtc.leaveRoom(webrtc.roomName);
 	$("#newPartner").attr('data', 'join');
@@ -107,7 +121,7 @@ socket.on('runRes', function(result, self) {
 		div = "pairResult-div";
 	}
 	console.log(result);
-	$("#" + div).html(result);
+	$("#" + div).html(resParse(result));
 });
 
 socket.on('logged', function(username) {
