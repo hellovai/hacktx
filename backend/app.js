@@ -2,6 +2,7 @@ var express = require('express')
 , app = express()
 , server = require('http').createServer(app)
 , io = require('socket.io').listen(server)
+, chat = require('chat.js')
 , rand = require("generate-key")
 , webrtc = require('socket.io').listen(8001);
 
@@ -22,7 +23,8 @@ io.sockets.on('connection', function (socket) {
 			queue.push(socket.id);
 			socket.emit('notif', "Finding you a partner...");
 		} else {
-			var partner = users[queue.pop()];
+			var part_id = queue.pop();
+			var partner = users[part_id];
 			var room = rand.generateKey(10);
 			socket.room = room;
 			partner.room = room;
@@ -33,10 +35,13 @@ io.sockets.on('connection', function (socket) {
 		}
 	});
 	socket.on('leaveRoom', function () {
-
+		chat.leaver(socket);
 	});
-	socket.on('chat', function () {
-		
+	socket.on('chat', function (data) {
+		if(socket.room) {
+			socket.broadcast.to(socket.room).emit('updatechat', false, data);
+		}
+		socket.emit('updatechat', true, data);
 	});
 	socket.on('question', function () {
 
@@ -56,6 +61,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('disconnect', function () {
-
+		chat.leaver(socket);
+		delete users[socket.id];
 	});
 });
