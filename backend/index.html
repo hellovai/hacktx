@@ -62,13 +62,57 @@
         </div>
         <div class="collapse navbar-collapse pull-right">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Log Out</a></li>
-            <li><a href="#about">Mike6856</a></li>
+            <li class="active"><a href="#" data-toggle="modal" data-target="#myModal">Log In</a></li>
             <li><a href="#contact"><img src="GitHub-Mark/github-icon.png" class="img-rounded" height="28" width="28"></a></li>
           </ul>
         </div><!-- /.nav-collapse -->
       </div><!-- /.container -->
     </div><!-- /.navbar -->
+
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Login to GitHub</h4>
+      </div>
+      <div class="modal-body">
+
+        <form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox"> Remember me
+        </label>
+      </div>
+    </div>
+  </div>
+</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Continue</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
 
     <div class="container">
 
@@ -118,14 +162,16 @@
             <div class="col-lg-4" id="userCode-div" style="padding-left:20px;display:block">
             	<textarea id="userCode" name="userCode" rows="20" >#Python 2.7 code </textarea>
               <div class="row">
-                <button type="button" class="btn btn-success btn-sm pull-right" id="runCode">  <span class="glyphicon glyphicon-play"> run </button>
+                <button type="button" class="btn btn-success btn-sm pull-right" id="runCode"style="margin-left:5px;">  <span class="glyphicon glyphicon-play"> run </button>
+
+                <button type="button" class="btn btn-info btn-sm pull-right" id="saveCode">  <span class="glyphicon glyphicon-floppy-disk"> save </button>
                 <br><br>
               </div>
             	<div class="row" id="userResult-div" style="padding-left:20px;">
             	</div>
             </div><!--/span-->
 
-            <div class="col-lg-4" id="pairCode-div" style="border-left:1pt solid #333333;">
+            <div class="col-lg-4" id="pairCode-div" >
               <textarea id="pairCode" name="pairCode" rows="20" style="display:none;">#Python 2.7 code</textarea>
               <div id="pairResult-div">
               </div>
@@ -191,15 +237,13 @@
       $("#userCode-div").toggle("slow");
     });
     $("#showPartnerCode").click(function() {
-      $("#pairCode").toggle("slow");
+      $("#pairCode-div").toggle("slow");
     });
     $("#showVideo").click(function() {
       $("#video").toggle("slow");
      });
 
-    $("#report div:visible").each(function() { 
-    console.log($(this).attr('id').); 
-    });
+
 
 
   });
