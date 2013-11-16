@@ -18,7 +18,7 @@ var joiner = function (socket) {
 		socket.pid = partner.id;
 		partner.join(room);
 		socket.join(room);
-		partner.emit('match', socket.github, socket.room);
+		partner.emit('match', socket.github, partner.room);
 		socket.emit('match', partner.github, socket.room);
 		return true;
 	}

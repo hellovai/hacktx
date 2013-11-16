@@ -94,6 +94,10 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
 		chat.leaver(socket);
+		var i = queue.indexOf(socket.id);
+	      if(i != -1) {
+	        queue.splice(i, 1);
+	      }
 		delete users[socket.id];
 	});
 });
