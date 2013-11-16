@@ -19,9 +19,28 @@ var users = globals.users;
 
 io.sockets.on('connection', function (socket) {
 	socket.github = "ANON";
+	socket.changeQ = false;
+	socket.pid = -1;
+	socket.qid = -1;
 	users[socket.id] = socket;
 	socket.on('joinRoom', function () {
-		chat.joiner(socket);
+		if(chat.joiner(socket)) {
+			var partner = users[socket.pid];
+			if(partner.qid != -1) {
+				socket.qid = partner.qid;
+				socket.emit('newq', question.getByIndex(socket.qid));
+			} else {
+				var qid = question.get();
+				socket.changeQ = false;
+				socket.qid = qid;
+				if(socket.pid != -1) {
+					users[socket.pid].changeQ = false;
+					users[socket.pid].qid = qid;
+				}
+				socket.emit('newq', question.getByIndex(qid));
+				partner.emit('newq', question.getByIndex(qid));
+			}
+		}
 	});
 	socket.on('leaveRoom', function () {
 		chat.leaver(socket);
@@ -39,23 +58,28 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('reqQuestion', function () {
 		var flag = true;
-		if(socket.pid != -1) {
+		if(socket.pid in users) {
 			var partner = users[socket.pid];
-			if(partner.changeQ !== true)
+			if (partner.changeQ == false)
 				flag = false;
 		}
 		if(flag) {
+			var qid = question.get();
 			socket.changeQ = false;
-			if(socket.pid != -1)
+			socket.qid = qid;
+			if(socket.pid != -1) {
 				users[socket.pid].changeQ = false;
-			io.sockets.in(socket.room).emit('newq', question.get());
+				users[socket.pid].qid = qid;
+				users[socket.pid].emit('newq', question.getByIndex(qid));
+			}
+			socket.emit('newq', question.getByIndex(qid));
 		} else {
 			socket.changeQ = true;
 			socket.emit('qwait');
 		}
 	});
-	socket.on('runCode', function () {
-
+	socket.on('runCode', function (code) {
+		question.run(socket, code);
 	});
 	// githut specific
 	socket.on('login', function () {
