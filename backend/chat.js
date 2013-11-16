@@ -1,5 +1,5 @@
 var globals = require('./globals')
-, rand = require("generate-key");
+	, rand = require("generate-key");
 var queue = globals.queue;
 var users = globals.users;
 
@@ -25,11 +25,12 @@ var joiner = function (socket) {
 
 var leaver = function (socket) {	
 	if(socket.room) {
-		socket.leave(room);
+		socket.leave(socket.room);
 		if(socket.pid in users) {
-			users[socket.pid].leave(room);
-			users[socket.pid].emit('solo');
-			users[socket.pid].pid = -1;
+			var partner = users[socket.pid];
+			partner.leave(partner.room);
+			partner.pid = -1;
+			partner.emit('solo');
 		}
 		socket.pid = -1;
 	}
@@ -38,9 +39,9 @@ var leaver = function (socket) {
 
 var sendMessage = function (socket, message) {
 	if(socket.room && (socket.pid in users)) {
-		users[socket.pid].emit('updatechat', false, data);
+		users[socket.pid].emit('updatechat', false, message);
 	}
-	socket.emit('updatechat', true, data);
+	socket.emit('updatechat', true, message);
 }
 
 module.exports.joiner = joiner;

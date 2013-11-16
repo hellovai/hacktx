@@ -1,5 +1,5 @@
 function writeMessage (string, cls) {
-	$("#chat").append("<font class=\"" + cls + "\">" + string + "<br/></font>");
+	$("#chat-convo").append("<font class=\"" + cls + "\">" + string + "<br/></font>");
 }
 
 var socket = io.connect('http://localhost:8080');
@@ -10,6 +10,7 @@ socket.on('connect', function(){
 });
 
 socket.on('match', function (partner) {
+	$("#chat-convo").html('');
 	writeMessage("Found: " + partner, "message");
 });
 // listener, whenever the server emits 'updatechat', this updates the chat body
@@ -31,16 +32,6 @@ socket.on('rejoin', function () {
 
 // on load of page
 $(function(){
-	// when the client clicks SEND
-	$('#datasend').click( function() {
-		var message = $('#data').val();
-		$('#data').val('');
-		// tell server to execute 'sendchat' and send along one parameter
-		if(message.length > 0 ) {
-			socket.emit('chat', message);
-		}
-		$("#data").focus();
-	});
 
 	//when the client clicks leave
 	$('#leavejoin').click( function() {
@@ -59,7 +50,13 @@ $(function(){
 	$('#data').keypress(function(e) {
 		if(e.which == 13) {
 			$(this).blur();
-			$('#datasend').focus().click();
+			var message = $('#data').val();
+			$('#data').val('');
+			if(message.length > 0 ) {
+				socket.emit('chat', message);
+				$('#data').val('');
+			}
+			$("#data").focus();
 		}
 	});
 });
