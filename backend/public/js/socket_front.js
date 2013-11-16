@@ -1,3 +1,7 @@
+function writeMessage (string) {
+	$("#chat").append(string + "<br/>");
+}
+
 var socket = io.connect('http://localhost:8080');
 
 // on connection to server, ask for user's name with an anonymous callback
@@ -5,17 +9,14 @@ socket.on('connect', function(){
 	socket.emit('joinRoom');
 });
 
-socket.on('match', function (room) {
-	$("#leavejoin").attr('value','leave');
-	$('#conversation').html("");
-	writeMessage("Found a friend!", "alert");
-	roomJoiner(room, 1);
+socket.on('match', function (partner) {
+	writeMessage("Found: " + partner);
 });
 // listener, whenever the server emits 'updatechat', this updates the chat body
 socket.on('updatechat', function (flag, data) {
 	var sender = "other";
 	if(flag) sender = "self";
-	writeMessage(data, sender);
+	writeMessage(sender + ":" + data);
 });
 
 socket.on('notify', function (data) {
@@ -41,7 +42,7 @@ $(function(){
 		$('#data').val('');
 		// tell server to execute 'sendchat' and send along one parameter
 		if(message.length > 0 ) {
-			socket.emit('sendchat', message);
+			socket.emit('chat', message);
 		}
 		$("#data").focus();
 	});

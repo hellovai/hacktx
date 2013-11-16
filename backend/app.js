@@ -15,15 +15,20 @@ app.get('/', function (req, res) {
 var queue = [];
 var users = {};
 io.sockets.on('connection', function (socket) {
-	socket.github = null;
+	socket.github = "ANON";
 	users[socket.id] = socket;
 	socket.on('joinRoom', function () {
 		if(queue.length == 0) {
 			queue.push(socket.id);
 			socket.emit('notif', "Finding you a partner...");
 		} else {
-			var threshold = 0.8;
 			var partner = users[queue.pop()];
+			var room = rand.generateKey(10);
+			socket.room = room;
+			partner.room = room;
+			partner.join(room);
+			socket.join(room);
+			partner.emit('match', socket.github);
 			socket.emit('match', partner.github);
 		}
 	});
@@ -31,7 +36,7 @@ io.sockets.on('connection', function (socket) {
 
 	});
 	socket.on('chat', function () {
-
+		
 	});
 	socket.on('question', function () {
 
