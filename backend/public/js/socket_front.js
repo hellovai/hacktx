@@ -3,7 +3,7 @@ function writeMessage (string, cls) {
 	$("#chat-convo").scrollTop($("#chat-convo")[0].scrollHeight);
 }
 
-var socket = io.connect('http://mealmaniac:8080');
+var socket = io.connect('http://www.mealmaniac.com:8080');
 
 // on load of page
 $(function(){
