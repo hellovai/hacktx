@@ -1,5 +1,6 @@
 var express = require('express')
 	, app = express()
+	, github = require('octonode')
 	, server = require('http').createServer(app)
 	, io = require('socket.io').listen(server)
 	, chat = require('./chat')
@@ -21,7 +22,8 @@ var queue = globals.queue;
 var users = globals.users;
 
 io.sockets.on('connection', function (socket) {
-	socket.gitub = "ANON";
+	socket.github = "ANON";
+	socket.gitlog = -1;
 	socket.changeQ = false;
 	socket.pid = -1;
 	socket.qid = -1;
@@ -85,11 +87,25 @@ io.sockets.on('connection', function (socket) {
 		question.run(socket, code);
 	});
 	// githut specific
-	socket.on('login', function () {
-
+	socket.on('login', function (usename, pass) {
+		socket.gitlog = github.client({
+			  username: usename,
+			  password: pass
+			});
+		socket.gitlog.me().repos({
+		  "name": "PrePair.me",
+		  "description": "Your interview portfolio",
+		}, function(err, data) {
+			if(err){
+				socket.emit('notif', "wrong login");
+			} else {
+				socket.github = usename;
+				socket.emit('logged', usename);
+			}
+		});
 	});
 	socket.on('commit', function () {
-
+		socket.emit('notif', "Commits are currently blocked");
 	});
 
 	socket.on('disconnect', function () {

@@ -1,6 +1,6 @@
-var exec = require('child_process').exec;
-var python = require('node-python');
 var globals = require('../globals');
+
+var python = require('node-python');
 os = python.import('os'),
 sysp = python.import('sys'),
 cwd = os.getcwd(),
