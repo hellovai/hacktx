@@ -98,8 +98,8 @@
             	</div>
             </div><!--/span-->
 
-            <div class="col-lg-4" id="pairCode" style="border-left:1pt solid #333333;">
-            	test
+            <div class="col-lg-4" id="pairCode-div" style="border-left:1pt solid #333333;">
+              <textarea id="pairCode" name="pairCode" rows="20" style="display:none;">#Python 2.7 code</textarea>
             </div><!--/span-->
 
             <div class="col-lg-3" id="video"style="border-left:1pt solid #333333;">
@@ -128,17 +128,28 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    
-  
-    <script>
-        var editor = CodeMirror.fromTextArea(document.getElementById("userCode"), {
-                mode: {name: "python",
-                		version: 2},
-                lineNumbers: true,
-                indentUnit:4,
-                tabMode: "shift",
-                matchBrackets: true
-      });
+    <script type="text/javascript">
+  var editor = CodeMirror.fromTextArea(document.getElementById("userCode"), {
+    mode: {name: "python",
+    version: 2},
+    lineNumbers: true,
+    indentUnit:4,
+    tabMode: "shift",
+    matchBrackets: true,
+    onKeyEvent: function (editor, e) {
+      if(e.type == "keypress") {
+        socket.emit('updatePartner', editor.doc.getValue());
+      }
+    },
+  });
+  var partnerEdit = CodeMirror.fromTextArea(document.getElementById("pairCode"), {
+    mode: {name: "python",
+    version: 2},
+    lineNumbers: true,
+    indentUnit:4,
+    tabMode: "shift",
+    readOnly: true
+  });
     </script>
 </body>
 </html>
