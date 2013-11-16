@@ -62,7 +62,7 @@
         </div>
         <div class="collapse navbar-collapse pull-right">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#" data-toggle="modal" data-target="#myModal">Log In</a></li>
+            <li id="#hideme" class="active"><a href="#" data-toggle="modal" data-target="#myModal">Log In</a></li>
             <li><a href="#contact"><img src="GitHub-Mark/github-icon.png" class="img-rounded" height="28" width="28"></a></li>
           </ul>
         </div><!-- /.nav-collapse -->
@@ -104,8 +104,8 @@
 </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Continue</button>
+        <button id="#cancelme" type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="totallogin">Continue</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

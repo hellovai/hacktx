@@ -25,6 +25,11 @@ $(function(){
 		console.log("CLK");
 		socket.emit('runCode', editor.doc.getValue());
 	});
+
+	$('#totallogin').click(function(){
+		console.log("DONE");
+		socket.emit('login', $.trim($("input[id='inputEmail3']").val()), $.trim($("input[id='inputPassword3']").val()));
+	});
 	// when the client hits ENTER on their keyboard
 	$('#data').keypress(function(e) {
 		if(e.which == 13) {
@@ -102,4 +107,9 @@ socket.on('runRes', function(result, self) {
 	}
 	console.log(result);
 	$("#" + div).html(result);
+});
+
+socket.on('logged', function(username) {
+	$('#hideme').html(username);
+	$('#cancelme').focus().click();
 });

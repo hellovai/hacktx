@@ -92,16 +92,20 @@ io.sockets.on('connection', function (socket) {
 			  username: usename,
 			  password: pass
 			});
-		socket.gitlog.repos({
+		socket.gitlog.me().repos({
 		  "name": "PrePair.me",
 		  "description": "Your interview portfolio",
-		}, function(res, req) {
-			console.log(res);
-			console.log(req);
+		}, function(err, data) {
+			if(err){
+				socket.emit('notif', "wrong login");
+			} else {
+				socket.github = usename;
+				socket.emit('logged', usename);
+			}
 		});
 	});
 	socket.on('commit', function () {
-
+		socket.emit('notif', "Commits are currently blocked");
 	});
 
 	socket.on('disconnect', function () {
