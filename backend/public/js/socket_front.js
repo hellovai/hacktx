@@ -35,6 +35,10 @@ socket.on('partnerCode', function(code) {
 	$('#pairCode').html(code);
 });
 
+socket.on('newq', function (question) {
+	$("#questionName").html(question);
+});
+
 // on load of page
 $(function(){
 
@@ -50,7 +54,7 @@ $(function(){
 			$(this).attr('value', 'joining');
 		}
 	});
-
+	$('#newQuestion')
 	// when the client hits ENTER on their keyboard
 	$('#data').keypress(function(e) {
 		if(e.which == 13) {

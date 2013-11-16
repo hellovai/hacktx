@@ -16,6 +16,7 @@ app.get('/', function (req, res) {
 
 var queue = globals.queue;
 var users = globals.users;
+
 io.sockets.on('connection', function (socket) {
 	socket.github = "ANON";
 	users[socket.id] = socket;
@@ -36,11 +37,28 @@ io.sockets.on('connection', function (socket) {
 			users[socket.pid].emit('partnerCode', data);
 		}
 	});
-	// githut specific
-	socket.on('login', function () {
-
+	socket.on('reqQuestion', function () {
+		var flag = true;
+		if(socket.pid != -1) {
+			var partner = users[socket.pid];
+			if(partner.changeQ !== true)
+				flag = false;
+		}
+		if(flag) {
+			socket.changeQ = false;
+			if(socket.pid != -1)
+				users[socket.pid].changeQ = false;
+			io.sockets.in(socket.room).emit('newq', question.get());
+		} else {
+			socket.changeQ = true;
+			socket.emit('qwait');
+		}
 	});
 	socket.on('runCode', function () {
+
+	});
+	// githut specific
+	socket.on('login', function () {
 
 	});
 	socket.on('commit', function () {
