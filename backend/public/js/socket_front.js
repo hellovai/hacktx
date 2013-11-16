@@ -82,7 +82,8 @@ socket.on('partnerCode', function(code) {
 });
 
 socket.on('newq', function (question) {
-	$("#questionName").html(question);
+	$("#questionName").html("<h1>" + question.title + "</h1>");
+	$("#questionText").html("<p>" + question.details + "</p>");
 });
 
 socket.on('solo', function() {
