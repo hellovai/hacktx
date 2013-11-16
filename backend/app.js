@@ -14,7 +14,7 @@ app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
 app.get('/test', function(req, res) {
-    res.sendfile(__dirname + '/node_modules/github-api/test/test_runner.html');
+    res.sendfile(__dirname + '/test/test_runner.html');
 });
 
 var queue = globals.queue;
