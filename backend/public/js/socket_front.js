@@ -8,15 +8,14 @@ var socket = io.connect('http://localhost:8080');
 // on load of page
 $(function(){
 	//when the client clicks leave
-	$('#leavejoin').click( function() {
+	$('#newPartner').click( function() {
 		$('#conversation').append('<em>Left the room!</em><br />');
-		if($(this).attr("value") == "leave") {
-			socket.emit('leave');
-			webrtc.leaveRoom(webrtc.room);
-			$(this).attr('value', 'join');
-		} else if ($(this).attr("value") == "join"){
-			socket.emit('join');
-			$(this).attr('value', 'joining');
+		if($(this).attr("data") == "leave") {
+			socket.emit('leaveRoom');
+			$(this).attr('data', 'leaving');
+		} else if ($(this).attr("data") == "join"){
+			socket.emit('joinRoom');
+			$(this).attr('data', 'joining');
 		}
 	});
 	$('#newQuestion').click( function () {
@@ -46,9 +45,13 @@ socket.on('connect', function(){
 	socket.emit('joinRoom');
 });
 
-socket.on('match', function (partner) {
+socket.on('match', function (partner, room) {
 	$("#chat-convo").html('');
-	writeMessage("Found: " + partner, "message");
+	writeMessage("Matched with " + partner, "alert");
+	$("#newPartner").attr('data', 'leave');
+	if(roomJoinAllow) {
+		webrtc.joinRoom(room);
+	}
 });
 // listener, whenever the server emits 'updatechat', this updates the chat body
 socket.on('updatechat', function (flag, data) {
@@ -61,18 +64,26 @@ socket.on('notif', function (data) {
 	writeMessage(data, "alert");
 });
 
-socket.on('rejoin', function () {
-	writeMessage("Partner has left!", "alert");
-	socket.emit('join');
-	$("#leavejoin").attr('value', 'joining');
-});
-
 socket.on('partnerCode', function(code) {
 	partnerEdit.doc.setValue(code);
 });
 
 socket.on('newq', function (question) {
 	$("#questionName").html(question);
+});
+
+socket.on('solo', function() {
+	writeMessage("You're partner left you!", "alert");
+	if(roomJoinAllow)
+		webrtc.leaveRoom(webrtc.roomName);
+	$("#newPartner").attr('data', 'join');
+});
+
+socket.on('left', function() {
+	writeMessage("Left the room!", "alert");
+	if(roomJoinAllow)
+		webrtc.leaveRoom(webrtc.roomName);
+	$("#newPartner").attr('data', 'join');
 });
 
 socket.on('runRes', function(result, self) {
