@@ -55,7 +55,7 @@ io.sockets.on('connection', function (socket) {
 		io.sockets.in(sockets.room).emit('updateQ', question.get());
 	});
 	socket.on('updatePartner', function (data) {
-		if(socket.pid) {
+		if(socket.pid != -1) {
 			users[socket.pid].emit('partnerCode', data);
 		}
 	});

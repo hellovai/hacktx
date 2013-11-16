@@ -22,8 +22,12 @@ module.exports.getByIndex = function(index) {
 }
 
 module.exports.run = function(socket, code) {
-	var result = runner.main(socket.qid, code);
-	socket.emit('runRes', result, true);
-	if(socket.pid != -1)
-		users[socket.pid].emit('runRes', result, false);
+	if(socket.qid >= 0 && socket.qid < questions.length) {
+		console.log("SUBMITTING");
+		var result = runner.main(socket.qid, code);
+		console.log("DONE");
+		socket.emit('runRes', result, true);
+		if(socket.pid != -1)
+			users[socket.pid].emit('runRes', result, false);
+	}
 }

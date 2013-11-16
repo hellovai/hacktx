@@ -5,6 +5,42 @@ function writeMessage (string, cls) {
 
 var socket = io.connect('http://localhost:8080');
 
+// on load of page
+$(function(){
+	//when the client clicks leave
+	$('#leavejoin').click( function() {
+		$('#conversation').append('<em>Left the room!</em><br />');
+		if($(this).attr("value") == "leave") {
+			socket.emit('leave');
+			webrtc.leaveRoom(webrtc.room);
+			$(this).attr('value', 'join');
+		} else if ($(this).attr("value") == "join"){
+			socket.emit('join');
+			$(this).attr('value', 'joining');
+		}
+	});
+	$('#newQuestion').click( function () {
+		socket.emit('reqQuestion');
+	});
+	$('#runCode').click( function() {
+		console.log("CLK");
+		socket.emit('runCode', editor.doc.getValue());
+	});
+	// when the client hits ENTER on their keyboard
+	$('#data').keypress(function(e) {
+		if(e.which == 13) {
+			$(this).blur();
+			var message = $('#data').val();
+			$('#data').val('');
+			if(message.length > 0 ) {
+				socket.emit('chat', message);
+				$('#data').val('');
+			}
+			$("#data").focus();
+		}
+	});
+});
+
 // on connection to server, ask for user's name with an anonymous callback
 socket.on('connect', function(){
 	socket.emit('joinRoom');
@@ -32,7 +68,7 @@ socket.on('rejoin', function () {
 });
 
 socket.on('partnerCode', function(code) {
-	$('#pairCode').html(code);
+	partnerEdit.doc.setValue(code);
 });
 
 socket.on('newq', function (question) {
@@ -45,46 +81,6 @@ socket.on('runRes', function(result, self) {
 	} else {
 		div = "pairResult-div";
 	}
-	$(div).html(result);
-});
-
-
-// on load of page
-$(function(){
-
-	//when the client clicks leave
-	$('#leavejoin').click( function() {
-		$('#conversation').append('<em>Left the room!</em><br />');
-		if($(this).attr("value") == "leave") {
-			socket.emit('leave');
-			webrtc.leaveRoom(webrtc.room);
-			$(this).attr('value', 'join');
-		} else if ($(this).attr("value") == "join"){
-			socket.emit('join');
-			$(this).attr('value', 'joining');
-		}
-	});
-	$('#newQuestion').click( function () {
-		socket.emit('reqQuestion');
-	});
-	$('#runCode').click( function() {
-		socket.emit('runCode', $("#userCode").val());
-	});
-	// when the client hits ENTER on their keyboard
-	$('#data').keypress(function(e) {
-		if(e.which == 13) {
-			$(this).blur();
-			var message = $('#data').val();
-			$('#data').val('');
-			if(message.length > 0 ) {
-				socket.emit('chat', message);
-				$('#data').val('');
-			}
-			$("#data").focus();
-		}
-	});
-
-	$('#userCode').keypress(function(e) {
-		socket.emit('updatePartner', $('#userCode').val());
-	});
+	console.log(result);
+	$("#" + div).html(result);
 });
