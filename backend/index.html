@@ -83,18 +83,18 @@
 	          		<br><br>
 					<button type="button" class="btn btn-warning " id="newPartner"style="width:70px;"><span class="glyphicon glyphicon-random"> <span class="glyphicon glyphicon-user"></button>
 					<br><br>
-					<button type="button" class="btn btn-success" id="showUserCode"style="width:70px;">  <span class="glyphicon glyphicon-arrow-down">  </button>
-					<br><br>
-					<button type="button" class="btn btn-primary" id="showPartnerCode"style="width:70px;">  <span class="glyphicon glyphicon-arrow-right">  </button>
-					<br><br>
-					<button type="button" class="btn btn-danger" id="showVideo"style="width:70px;">  <span class="glyphicon glyphicon-facetime-video">  </button>
 
+  					<button type="button" class="btn btn-success" id="showUserCode"style="width:70px;">  <span class="glyphicon glyphicon-arrow-down">  </button>
+  					<br><br>
+  					<button type="button" class="btn btn-primary" id="showPartnerCode"style="width:70px;">  <span class="glyphicon glyphicon-arrow-right">  </button>
+  					<br><br>
+  					<button type="button" class="btn btn-danger" id="showVideo"style="width:70px;">  <span class="glyphicon glyphicon-facetime-video">  </button>
 				</div>
 
           	</div>
-
-            <div class="col-lg-4" id="userCode-div" style="padding-left:20px;">
-            	<textarea id="userCode" name="userCode" rows="20" style="display:none;">#Python 2.7 code </textarea>
+            <div id ="report">
+            <div class="col-lg-4" id="userCode-div" style="padding-left:20px;display:block">
+            	<textarea id="userCode" name="userCode" rows="20" >#Python 2.7 code </textarea>
               <div class="row">
                 <button type="button" class="btn btn-success btn-sm pull-right" id="runCode">  <span class="glyphicon glyphicon-play"> run </button>
                 <br><br>
@@ -104,15 +104,18 @@
             	</div>
             </div><!--/span-->
 
-            <div class="col-lg-4" id="pairCode" style="border-left:1pt solid #333333;">
+            <div class="col-lg-4" id="pairCode" style="border-left:1pt solid #333333; display:none;">
               <div id="pairResult-div">
                 TEST
               </div>
             </div><!--/span-->
 
-            <div class="col-lg-3" style="border-left:1pt solid #333333;">
-              <div class="row" id="video">
+            <div class="col-lg-3" id="video" style="border-left:1pt solid #333333;">
+              <div class="row">
+                skfjsalkdf;lskj
               </div>
+
+            </div>
 
             </div><!--/span-->
       
@@ -146,6 +149,27 @@
                 tabMode: "shift",
                 matchBrackets: true
       });
+    </script>
+    <script>
+    var counter = 0;
+    $(document).ready(function() {
+    $("#showUserCode").click(function() {
+      $("#userCode-div").toggle("slow");
+    });
+    $("#showPartnerCode").click(function() {
+      $("#pairCode").toggle("slow");
+    });
+    $("#showVideo").click(function() {
+      $("#video").toggle("slow");
+     });
+
+    $("#report div:visible").each(function() { 
+    console.log($(this).attr('id').); 
+    });
+
+
+  });
+
     </script>
 </body>
 </html>
