@@ -1,11 +1,11 @@
 var express = require('express')
-, app = express()
-, server = require('http').createServer(app)
-, io = require('socket.io').listen(server)
-, chat = require('./chat')
-, globals = require('./globals')
-, question = require('./question')
-, webrtc = require('socket.io').listen(8001);
+	, app = express()
+	, server = require('http').createServer(app)
+	, io = require('socket.io').listen(server)
+	, chat = require('./chat')
+	, globals = require('./globals')
+	, question = require('./question')
+	, webrtc = require('socket.io').listen(8001);
 
 app.use(express.static(__dirname + '/public'));
 server.listen(8080);
@@ -31,8 +31,10 @@ io.sockets.on('connection', function (socket) {
 	socket.on('question', function () {
 		io.sockets.in(sockets.room).emit('updateQ', question.get());
 	});
-	socket.on('updatePartner', function () {
-
+	socket.on('updatePartner', function (data) {
+		if(socket.pid) {
+			users[socket.pid].emit('partnerCode', data);
+		}
 	});
 	// githut specific
 	socket.on('login', function () {

@@ -31,6 +31,10 @@ socket.on('rejoin', function () {
 	$("#leavejoin").attr('value', 'joining');
 });
 
+socket.on('partnerCode', function(code) {
+	$('#pairCode').html(code);
+});
+
 // on load of page
 $(function(){
 
@@ -59,5 +63,9 @@ $(function(){
 			}
 			$("#data").focus();
 		}
+	});
+
+	$('#userCode').keypress(function(e) {
+		socket.emit('updatePartner', $('#userCode').val());
 	});
 });
