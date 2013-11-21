@@ -1,4 +1,4 @@
-hacktx
+prepair.us
 ======
 
-interview practice site
+interview practice site, helps users collaboratively prefect interview skills while maintaining a complete github profile
