@@ -4,6 +4,7 @@ var globals = require('./globals')
 
 var queue = globals.queue;
 var users = globals.users;
+var isConnected = globals.isConnected;
 
 var config = require('./config').matching;
 var crit = Math.pow(config.decay, config.critical) * config.threshhold;
@@ -72,12 +73,6 @@ var local_join = function (socket, thresh) {
 
 var compare = function (partner, self) {
 	return 1.0;
-}
-
-var isConnected = function (socket) {
-	if(socket.room && (socket.pid in users))
-		return true;
-	return false;
 }
 
 

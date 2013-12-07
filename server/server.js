@@ -11,6 +11,7 @@ var config = require('./config')
 
 var server = http.createServer(app).listen(config.port);
 var io = socketio.listen(server);
+var isConnected = globals.isConnected;
 
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
@@ -42,6 +43,8 @@ io.sockets.on('connection', function (socket) {
 	socket.on('getQuestion', function () {
 		if (isConnected(socket)) {
 			if ( "cq" in socket.flags ) {
+				var index = socket.flags.indexOf("cq");
+				socket.flags.splice(index, 1);
 				question.getNew(socket);
 			} else {
 				var partner = users[socket.pid];
@@ -54,8 +57,9 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// code box events
-	socket.on('change', function (argument) {
-		// body...
+	socket.on('change', function (diff) {
+		if(isConnected(socket))
+			users[socket.pid].emit('updateCode', diff);
 	});
 	socket.on('run', function (argument) {
 		// body...
