@@ -18,3 +18,6 @@ node_modules
 
 # for your security
 config.js
+
+#MAC
+.DS_store
