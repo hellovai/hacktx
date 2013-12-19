@@ -49,24 +49,28 @@ var local_join = function (socket, thresh) {
 	if(queue.length == 0 || thresh < crit) {
 		if(thresh < crit)
 			socket.emit('notif', "Finding a partner is taking longer than expected...");
-		if(socket.room !== undefined)
+		if(socket.room === undefined)
 			queue.push(socket.id);
+		else
+			socket.emit('notif', 'Some error occured! Please refresh your page to find a partner');
 	} else {
 		var part_id = queue.pop();
-		var partner = users[part_id];
-		if(compare(partner, socket) < thresh) {
-			queue.push(part_id);
-			return local_join(socket, thresh * config.decay);
-		} else {
-			var room = rand.generateKey(10);
-			partner.room = room;
-			socket.room = room;
-			partner.pid = socket.id;
-			socket.pid = partner.id;
-			partner.join(room);
-			socket.join(room);
-			return true;
-		}
+		if (part_id !== socket.id) {
+			var partner = users[part_id];
+			if(compare(partner, socket) < thresh) {
+				queue.push(part_id);
+				return local_join(socket, thresh * config.decay);
+			} else {
+				var room = rand.generateKey(10);
+				partner.room = room;
+				socket.room = room;
+				partner.pid = socket.id;
+				socket.pid = partner.id;
+				partner.join(room);
+				socket.join(room);
+				return true;
+			}
+		} return local_join(socket, thresh * config.decay);
 	}
 	return false;
 }

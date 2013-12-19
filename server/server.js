@@ -13,6 +13,7 @@ var server = http.createServer(app).listen(config.port);
 var io = socketio.listen(server);
 var isConnected = globals.isConnected;
 
+app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
@@ -23,14 +24,26 @@ var users = globals.users;
 io.sockets.on('connection', function (socket) {
 	// objects
 	socket.github = undefined;
-	socket.flags = [];
+	socket.alertflags = [];
 	socket.pid = undefined;
 	socket.room = undefined;
+	users[socket.id] = socket;
 	
+	socket.on('disconnect', function () {
+		chat.leave(socket);
+		var i = queue.indexOf(socket.id);
+		if(i != -1) {
+			queue.splice(i, 1);
+		}
+		delete users[socket.id];
+	});
+
 	// room events
-	socket.on('joinRoom', function () {
-		if(chat.join(socket))
-			question.set(socket);
+	socket.on('toggleRoom', function () {
+		if(isConnected(socket))
+			chat.leave(socket);
+		else if(chat.join(socket))
+			question.setQ(socket);
 	});
 	socket.on('leaveRoom', function () {
 		chat.leave(socket);
@@ -42,13 +55,13 @@ io.sockets.on('connection', function (socket) {
 	// question events
 	socket.on('getQuestion', function () {
 		if (isConnected(socket)) {
-			if ( "cq" in socket.flags ) {
-				var index = socket.flags.indexOf("cq");
-				socket.flags.splice(index, 1);
+			if ( socket.alertflags.indexOf("cq") >= 0 ) {
+				var index = socket.alertflags.indexOf("cq");
+				socket.alertflags.splice(index, 1);
 				question.getNew(socket);
 			} else {
 				var partner = users[socket.pid];
-				partner.flag.append("cq");
+				partner.alertflags.push("cq");
 				partner.emit('changeQuestion');
 			}
 		} else {

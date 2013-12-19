@@ -12,6 +12,7 @@
     "socket.io-client": "latest",
     "node-uuid": "latest",
     "node-python":"latest",
-    "octonode":"latest"
+    "octonode":"latest",
+    "mongojs": "latest"
   }
 }
