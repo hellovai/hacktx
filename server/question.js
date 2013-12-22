@@ -28,7 +28,12 @@ module.exports.getNew = getNew;
 // grabs random question from the db
 function getRandQuestionGTE(socket, threshold, trigger, rand) {
 	db.questions.findOne( { random : { $gte : rand } }, function(err, res) {
-		if(err || !res) {
+		if(threshold < crit) {
+			db.questions.findOne(function (err, res) {
+				if(err || !res) console.log('WTF HAPPENED!');
+				else sendQ(socket, res);
+			});
+		} else if(err || !res) {
 			reRun(socket, threshold, trigger, rand);
 		} else if(noOverlap(socket, res)) {
 			sendQ(socket, res)
@@ -55,22 +60,22 @@ function reRun (socket, threshold, trigger, rand) {
 		trigger = true;
 		rand = Math.random();
 	} else trigger = false;
-	
-	if(threshold < crit) {
-		db.questions.findOne(function (err, res) {
-			sendQ(socket, res);
-		});
-	} else if(trigger)
+	console.log(threshold);
+	if(trigger)
 		getRandQuestionGTE(socket, threshold * config.decay, trigger, rand)
 	else
 		getRandQuestionLTE(socket, threshold * config.decay, trigger, rand)
 }
 
 function noOverlap(socket, q) {
+	if(socket.question === undefined)
+		return true
 	if(q.folder != socket.question) {
 		if(!isConnected(socket))
 			return true
 		var partner = users[socket.pid];
+		if(partner.question === undefined)
+			return true
 		if(partner.question != q.folder)
 			return true
 	}

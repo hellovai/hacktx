@@ -44,10 +44,12 @@
 	  						<source src="rando.mp4" type="video/mp4">
 	  						Your browser does not support the video tag.
 						</video>
-						<video id="remove-video" class="vids">
-	  						<source src="rando.mp4" type="video/mp4">
-	  						Your browser does not support the video tag.
-						</video>
+						<div id="remotes">
+							<video id="remove-video" class="vids">
+	  							<source src="rando.mp4" type="video/mp4">
+	  							Your browser does not support the video tag.
+							</video>
+						</div>
 					</div>
 					<div class="code-box" id="self-code-box">
 						<a href="#"><i class="fa fa-sort-down" id="self-result-toggle"></i></a>
@@ -90,10 +92,15 @@
 	<script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
 	<script src="codemirror/mode/python/python.js"></script>
     <script src="codemirror/addon/edit/matchbrackets.js"></script>
+	
     <script src="/socket.io/socket.io.js"></script>
+	<script src="js/signaling-base.js"></script> 
+
+	<script src="js/signaling.js"></script> 
 	<script src="js/socket-client.js"></script>
 	<script type="text/javascript" src="js/plugins.js"></script>
 	<script type="text/javascript" src="js/custom.js"></script>
+	<script src="js/signaling-base.js"></script> 
 	<script type="text/javascript">
 	var selfEdit = 1;
 	var remoteEdit = 1;

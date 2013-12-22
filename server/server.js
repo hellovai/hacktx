@@ -4,6 +4,7 @@ var config = require('./config')
 	, app = express()
 	, http = require('http')
 	, socketio = require('socket.io')
+	, uuid = require('node-uuid')
 	, chat = require('./chat')
 	, globals = require('./globals')
 	, question = require('./question')
@@ -22,6 +23,26 @@ app.get('/', function (req, res) {
 var queue = globals.queue;
 var users = globals.users;
 
+
+function describeRoom(name) {
+    var clients = io.sockets.clients(name);
+    var result = {
+        clients: {}
+    };
+    clients.forEach(function (client) {
+        result.clients[client.id] = client.resources;
+    });
+    return result;
+}
+
+function safeCb(cb) {
+    if (typeof cb === 'function') {
+        return cb;
+    } else {
+        return function () {};
+    }
+}
+
 io.sockets.on('connection', function (socket) {
 	// objects
 	socket.github = undefined;
@@ -31,10 +52,16 @@ io.sockets.on('connection', function (socket) {
 	socket.searching = false;
 	socket.question = undefined;
 	socket.loggedIn = false;
+    socket.resources = {
+        screen: false,
+        video: true,
+        audio: false
+    };
 
 	users[socket.id] = socket;
 	
 	socket.on('disconnect', function () {
+		removeFeed();
 		chat.leave(socket);
 		var i = queue.indexOf(socket.id);
 		if(i != -1) {
@@ -51,8 +78,10 @@ io.sockets.on('connection', function (socket) {
 			socket.searching = false;
 			queue.splice( queue.indexOf(socket.id) , 1);
 			socket.emit('notif', 'Leaving Queue!');
-		} else if(chat.join(socket))
+		} else if(chat.join(socket)) {
 			question.setQ(socket);
+			console.log(socket.room);
+		}
 	});
 	socket.on('leaveRoom', function () {
 		chat.leave(socket);
@@ -97,4 +126,41 @@ io.sockets.on('connection', function (socket) {
 	socket.on('commit', function (argument) {
 		// body...
 	});
+
+	//webrtc crap
+	// pass a message to another id
+    socket.on('message', function (details) {
+        var otherClient = io.sockets.sockets[details.to];
+        if (!otherClient) return;
+        details.from = socket.id;
+        otherClient.emit('message', details);
+    });
+
+    socket.on('join', join);
+
+    function removeFeed(type) {
+        io.sockets.in(socket.room).emit('remove', {
+            id: socket.id,
+            type: type
+        });
+    }
+
+    function join(name, cb) {
+        safeCb(cb)(null, describeRoom(name));
+        socket.join(name);
+        socket.room = name;
+    }
+	socket.on('leave', removeFeed);
+
+    socket.on('create', function (name, cb) {
+        cb = name;
+        name = uuid();
+        // check if exists
+        if (io.sockets.clients(name).length) {
+            safeCb(cb)('taken');
+        } else {
+            join(name);
+            safeCb(cb)(null, name);
+        }
+    });
 });

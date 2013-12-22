@@ -30,11 +30,16 @@
 	height: 33%;
 }
 
-	#video-box .vids {
+	#video-box .vids, #video-box #remotes {
 		width: 33%;
 		height: 100%;
 		padding-right: 2px;
 		float: left;
+	}
+
+	#video-box #remotes video {
+		width: 100%;
+		height: 100%;
 	}
 	
 .toggles .code-box {

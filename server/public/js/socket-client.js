@@ -10,6 +10,7 @@ socket.on('match', function (github, room) {
 	$('#conversation').html('');
 	write_alert("We found a partner!");
 	notify(1);
+	joinWebRTC(room, 10);
 });
 
 socket.on('solo', function (partner) {
@@ -17,6 +18,7 @@ socket.on('solo', function (partner) {
 		write_alert("You have left your partner!");
 	else
 		write_alert("Your partner has left!");
+	leaveWebRTC();
 	notify(2);
 });
 
