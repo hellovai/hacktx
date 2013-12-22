@@ -1,5 +1,4 @@
-var mongojs = require('mongojs')
-	, config = require('./config').mongo;
+var mongojs = require('mongojs'), config = require('./config').mongo;
 
 var databaseUrl = config.username + ":" + config.password + "@" + config.host + "/" + config.db;
 // "username:password@example.com/mydb"

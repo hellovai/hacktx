@@ -14,8 +14,8 @@ function write_message (me, message) {
 }
 
 function write_question (title, data) {
-	$('#question-box h1').html(title);
-	$('#question-box p').html(data);
+	$('#question-box').find("h1").html(title);
+	$('#question-box').find("p").html(data);
 }
 
 function present (data) {
