@@ -23,7 +23,6 @@ class Sandbox(object):
 				inputData = open( os.path.join(direc, files), 'r')
 				outputData = open( os.path.join(direc, answerfile), 'r')
 				data = self.__runner__.Run( code, inputData.read(), outputData.read() )
-				print data
 				result.append(data)
 				inputData.close()
 				outputData.close()

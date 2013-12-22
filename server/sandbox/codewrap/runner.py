@@ -60,7 +60,6 @@ class Runner(JailCodeHelpers):
             self.assertResultOk(res, outputStr)
             result['output'] = res.stdout
         except Exception, e:
-            print e
             result['error'] = e.error
             if e.output != None:
                 result['output'] = e.output
