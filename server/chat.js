@@ -11,10 +11,13 @@ var crit = Math.pow(config.decay, config.critical) * config.threshhold;
 
 var join = function (socket) {
 	socket.emit('notif', "Finding you a partner...");
+	socket.searching = true;
 	var able = local_join(socket, config.threshhold);
 	if (able) {
 		var room = socket.room;
 		var partner = users[socket.pid]
+		socket.searching = false;
+		partner.searching = false;
 		socket.emit('match', partner.github, room);
 		partner.emit('match', socket.github, room);
 		return true;
@@ -49,15 +52,18 @@ var local_join = function (socket, thresh) {
 	if(queue.length == 0 || thresh < crit) {
 		if(thresh < crit)
 			socket.emit('notif', "Finding a partner is taking longer than expected...");
-		if(socket.room === undefined)
+		if(socket.room === undefined) {
+			queue.searching = true;
 			queue.push(socket.id);
-		else
+		} else
 			socket.emit('notif', 'Some error occured! Please refresh your page to find a partner');
 	} else {
 		var part_id = queue.pop();
 		if (part_id !== socket.id) {
 			var partner = users[part_id];
-			if(compare(partner, socket) < thresh) {
+			if (!partner.searching) {
+				return local_join(socket, thresh * config.decay);
+			} else if(compare(partner, socket) < thresh) {
 				queue.push(part_id);
 				return local_join(socket, thresh * config.decay);
 			} else {

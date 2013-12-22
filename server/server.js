@@ -6,7 +6,8 @@ var config = require('./config')
 	, socketio = require('socket.io')
 	, chat = require('./chat')
 	, globals = require('./globals')
-	, question = require('./question');
+	, question = require('./question')
+	, sandbox = require('./sandbox');
 
 
 var server = http.createServer(app).listen(config.port);
@@ -27,6 +28,10 @@ io.sockets.on('connection', function (socket) {
 	socket.alertflags = [];
 	socket.pid = undefined;
 	socket.room = undefined;
+	socket.searching = false;
+	socket.question = undefined;
+	socket.loggedIn = false;
+
 	users[socket.id] = socket;
 	
 	socket.on('disconnect', function () {
@@ -42,7 +47,11 @@ io.sockets.on('connection', function (socket) {
 	socket.on('toggleRoom', function () {
 		if(isConnected(socket))
 			chat.leave(socket);
-		else if(chat.join(socket))
+		else if(socket.searching) {
+			socket.searching = false;
+			queue.splice( queue.indexOf(socket.id) , 1);
+			socket.emit('notif', 'Leaving Queue!');
+		} else if(chat.join(socket))
 			question.setQ(socket);
 	});
 	socket.on('leaveRoom', function () {
@@ -74,8 +83,8 @@ io.sockets.on('connection', function (socket) {
 		if(isConnected(socket))
 			users[socket.pid].emit('updateCode', diff);
 	});
-	socket.on('run', function (argument) {
-		// body...
+	socket.on('run', function (code) {
+		sandbox.run(socket, code);
 	});
 
 	// git events

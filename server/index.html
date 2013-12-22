@@ -21,7 +21,10 @@
 	<div class="pure-g" id="content">
 		<div id="help"><button class="btn-small btn blandme" id="tutorial" data-toggle="tooltip" title="Click me" data-placement="left"><i class="fa fa-lg fa-question-circle"></i></button></div>
 		<div class="pure-u-1-24 menu-container">
-			<ul class="menu"><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:white" id="login" data-toggle="tooltip" title="" data-placement="right" data-original-title="Login"> 					<i class="fa fa-lg fa-github-alt"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:green" id="toggleQuestion" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Question!"> 					<i class="fa fa-lg fa-question"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:purple" id="video" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Video"> 					<i class="fa fa-lg fa-video-camera"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:orange" id="userCode" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Code"> 					<i class="fa fa-lg fa-code"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:gray" id="partnerCode" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Partner's Code"> 					<i class="fa fa-lg fa-user"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:red" id="toggleRoom" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Partner"> 					<i class="fa fa-lg fa-random"></i>					</button></li></ul>
+			<ul class="menu">
+				<li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:white" id="login" data-toggle="tooltip" title="" data-placement="right" data-original-title="Login"> 					<i class="fa fa-lg fa-github-alt"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:green" id="toggleQuestion" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Question!"> 					<i class="fa fa-lg fa-question"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:purple" id="video" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Video"> 					<i class="fa fa-lg fa-video-camera"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:orange" id="userCode" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Code"> 					<i class="fa fa-lg fa-code"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:gray" id="partnerCode" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Partner's Code"> 					<i class="fa fa-lg fa-user"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:red" id="toggleRoom" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Partner"> 					<i class="fa fa-lg fa-random"></i>					</button></li>
+
+			</ul>
 		</div>
 
 		<!-- <div class="pure-u-23-24 obj-container" style="background-color:red" id="main"> -->
@@ -33,30 +36,39 @@
 			<div class="plugins">
 				<div class="toggles">
 					<div id="question-box">
-						<h1>The question appears here!</h1>
-						<p>
-							To get started simply log in with your github and learn some latin. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-						</p>
-						<a href="#" id="more">More</a>
+						<h1></h1>
+						<p></p>
 					</div>
-					<div id="self-code-box">
-						<video id="self-video">
+					<div id="video-box">
+						<video id="self-video" class="vids">
 	  						<source src="rando.mp4" type="video/mp4">
 	  						Your browser does not support the video tag.
 						</video>
-						<textarea class="code" id="self-code"></textarea>
-						<button type="button" class="btn btn-success btn-sm pull-right code-button" id="runCode"><i class="fa fa-play"></i> Run</button>
-						<button type="button" class="btn btn-info btn-sm pull-right code-button" id="saveCode"><i class="fa fa-floppy-o"></i> Save</button>
-						<div class="run-result" id="self-result"></div>
-					</div>
-					<div id="remote-code-box">
-						<video id="remove-video">
+						<video id="remove-video" class="vids">
 	  						<source src="rando.mp4" type="video/mp4">
 	  						Your browser does not support the video tag.
 						</video>
-						<textarea class="code" id="remote-code" readonly></textarea>
-						<button type="button" class="btn btn-warn btn-sm pull-right code-button" id="forkCode"><i class="fa fa-code-fork"></i> Fork</button>
-						<div class="run-result" id="remote-code"></div>
+					</div>
+					<div class="code-box" id="self-code-box">
+						<a href="#"><i class="fa fa-sort-down" id="self-result-toggle"></i></a>
+						<div class="run-result-wrapper" id="self-result-wrapper">
+							<div class="run-result" id="self-result"></div>
+						</div>
+						<div class="code-wrapper" id="self-code-wrapper">
+							<textarea class="code" id="self-code"></textarea>
+							<button type="button" class="btn btn-success btn-sm pull-right code-button" id="runCode"><i class="fa fa-play"></i> Run</button>
+							<button type="button" class="btn btn-info btn-sm pull-right code-button" id="saveCode"><i class="fa fa-floppy-o"></i> Save</button>
+						</div>
+					</div>
+					<div class="code-box" id="remote-code-box">
+						<a href="#"><i class="fa fa-sort-down" id="remote-result-toggle"></i></a>
+						<div class="run-result-wrapper" id="remote-result-wrapper">
+							<div class="run-result" id="remote-result"></div>
+						</div>
+						<div class="code-wrapper" id="remote-code-wrapper">
+							<textarea class="code" id="remote-code" readonly></textarea>
+							<button type="button" class="btn btn-warn btn-sm pull-right code-button" id="forkCode"><i class="fa fa-code-fork"></i> Fork</button>
+						</div>
 					</div>
 				</div>
 				<div id="chat-box">
@@ -74,45 +86,52 @@
 	<!-- The fucking javascript -->
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery-blink.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-	<script src="js/socket-client.js"></script>
-	<script type="text/javascript" src="js/custom.js"></script>
-	<script type="text/javascript" src="js/plugins.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
 	<script src="codemirror/mode/python/python.js"></script>
     <script src="codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+	<script src="js/socket-client.js"></script>
+	<script type="text/javascript" src="js/plugins.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
 	<script type="text/javascript">
-	var selfEdit = CodeMirror.fromTextArea(document.getElementById("self-code"), {
-		mode: {name: "python",
-		version: 2},
-		lineNumbers: true,
-		indentUnit:4,
-		tabMode: "shift",
-		matchBrackets: true,
-		onKeyEvent: function (editor, e) {
-		  if(e.type == "keypress") {
-		    socket.emit('change', editor.doc.getValue());
-		  }
-		},
-	});
-	var remoteEdit = CodeMirror.fromTextArea(document.getElementById("remote-code"), {
-		mode: {name: "python",
-		version: 2},
-		lineNumbers: true,
-		indentUnit:4,
-		tabMode: "shift",
-		readOnly: true
-	});
+	var selfEdit = 1;
+	var remoteEdit = 1;
 	$(document).ready(function() {
 		// createMenu();
 		$(window).ready(updateHeight);
 		$(window).resize(updateHeight);
 		$('#tutorial').tooltip();
-		selfEdit.setSize("100%", "70%");
-		remoteEdit.setSize("100%", "70%");
+		selfEdit = CodeMirror.fromTextArea(document.getElementById("self-code"), {
+			mode: {name: "python",
+			version: 2},
+			lineNumbers: true,
+			indentUnit:4,
+			tabMode: "shift",
+			matchBrackets: true,
+			onKeyEvent: function (editor, e) {
+			  if(e.type == "keyup") {
+			    socket.emit('change', editor.doc.getValue());
+			  }
+			},
+		});
+		remoteEdit = CodeMirror.fromTextArea(document.getElementById("remote-code"), {
+			mode: {name: "python",
+			version: 2},
+			lineNumbers: true,
+			indentUnit:4,
+			tabMode: "shift",
+			readOnly: true
+		});
+		selfEdit.setSize("100%", "100%");
+		remoteEdit.setSize("100%", "100%");
+		write_question('The question appears here!', 'To get started simply log in with your github and learn some latin. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
+		$('.menu-item').tooltip({
+			trigger:'hover',
+		});
 	});
 	</script>
+	<script type="text/javascript" src="js/buttons.js"></script>
 </body>
 
 </html>

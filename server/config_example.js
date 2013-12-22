@@ -11,6 +11,15 @@ config = {
 		"critical":25,
 		"decay":0.90,
 		"threshhold": 0.80
+	},
+	"sandbox": {
+		"basepath":"/Users/ktheory/github/hacktx/server/question",
+		"user":"ktheory"
+	},
+	"question": {
+		"critical":25,
+		"decay":0.90,
+		"threshhold": 0.80
 	}
 };
 

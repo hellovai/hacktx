@@ -24,30 +24,63 @@
 	overflow: auto;
 	float: left;
 }
+
+.toggles #video-box {
+	width: 100%;
+	height: 33%;
+}
+
+	#video-box .vids {
+		width: 33%;
+		height: 100%;
+		padding-right: 2px;
+		float: left;
+	}
 	
-.toggles #self-code-box, .toggles #remote-code-box {
+.toggles .code-box {
 	width: 33%;
-	height: 100%;
+	height: 67%;
 	float: left;
 	padding-right:2px; 
+	overflow: hidden;
+	position: relative;
 }
-	.toggles #self-code-box video, .toggles #remote-code-box video {
-		width: 100%;
-	}
-	.toggles #self-code-box .code-button, .toggles #remote-code-box .code-button {
+
+	.toggles .code-box .code-button {
 		position: relative;
 		top: -40px;
 		margin: 5px;
 	}
 	textarea.code {
 		width: 100%;
-		height: 60% !important;
+		height: 100%;
 	}
-	div.run-result {
-		display: none;
+	div.run-result-wrapper {
 		background: lightgray;
+		height: 5%;
 		width: 100%;
-		/*height: 14%;*/
+		overflow-y: auto;
+		position: relative;
+	}
+	div.code-wrapper {
+		height: 95%;
+		width: 100%;
+	}
+
+	div.code-box a i {
+		position: absolute;
+		top: 0px;
+		right: 5px;
+		z-index: 1;
+	}
+
+	div.run-result {
+		background: inherit;
+		width: 100%;
+		overflow-x: wrap;
+		overflow-y: auto;
+		margin: 0;
+		/*height: 100%;*/
 	}
 
 .plugins #chat-box {

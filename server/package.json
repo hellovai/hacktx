@@ -13,6 +13,7 @@
     "node-uuid": "latest",
     "node-python":"latest",
     "octonode":"latest",
-    "mongojs": "latest"
+    "mongojs": "latest",
+    "simplesets": "latest"
   }
 }
