@@ -2,9 +2,8 @@
 function createMenu() {
 	var menu_items = [ {img:'github-alt', id:'login', color:'#f6a6a6', title:'Login'},
 						{img:'question', id:'toggleQuestion', color:'green', title:'New Question!'},
-						{img:'video-camera', id:'video', color:'purple', title:'Hide Video'},
-						{img:'code', id:'userCode', color:'orange', title:'Hide Code'},
-						{img:'user', id:'partnerCode', color:'gray', title:'Hide Partner\'s Code'},
+						{img:'video-camera', id:'videoToggle', color:'purple', title:'Hide Video'},
+						{img:'code', id:'codeToggle', color:'orange', title:'Hide Code'},
 						{img:'random', id:'toggleRoom', color:'red', title:'New Partner'},
 					];
 	var div = $("ul[class='menu']");

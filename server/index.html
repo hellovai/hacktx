@@ -22,9 +22,7 @@
 		<div id="help"><button class="btn-small btn blandme" id="tutorial" data-toggle="tooltip" title="Click me" data-placement="left"><i class="fa fa-lg fa-question-circle"></i></button></div>
 		<div class="pure-u-1-24 menu-container">
 			<ul class="menu">
-				<li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:white" id="login" data-toggle="tooltip" title="" data-placement="right" data-original-title="Login"> 					<i class="fa fa-lg fa-github-alt"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:green" id="toggleQuestion" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Question!"> 					<i class="fa fa-lg fa-question"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:purple" id="video" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Video"> 					<i class="fa fa-lg fa-video-camera"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:orange" id="userCode" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Code"> 					<i class="fa fa-lg fa-code"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:gray" id="partnerCode" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Partner's Code"> 					<i class="fa fa-lg fa-user"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:red" id="toggleRoom" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Partner"> 					<i class="fa fa-lg fa-random"></i>					</button></li>
-
-			</ul>
+			<li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:#f6a6a6" id="login" data-toggle="tooltip" title="" data-placement="right" data-original-title="Login"> 					<i class="fa fa-lg fa-github-alt"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:green" id="toggleQuestion" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Question!"> 					<i class="fa fa-lg fa-question"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:purple" id="videoToggle" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Video"> 					<i class="fa fa-lg fa-video-camera"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:orange" id="codeToggle" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Code"> 					<i class="fa fa-lg fa-code"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:red" id="toggleRoom" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Partner"> 					<i class="fa fa-lg fa-random"></i>					</button></li></ul>
 		</div>
 
 		<!-- <div class="pure-u-23-24 obj-container" style="background-color:red" id="main"> -->
@@ -34,21 +32,14 @@
 				<h2>Your one stop interview preperation engine</h2>
 			</div>
 			<div class="plugins">
+				<div id="question-box">
+					<h1></h1>
+					<p></p>
+				</div>
 				<div class="toggles">
-					<div id="question-box">
-						<h1></h1>
-						<p></p>
-					</div>
 					<div id="video-box">
-						<video id="self-video" class="vids">
-	  						<source src="rando.mp4" type="video/mp4">
-	  						Your browser does not support the video tag.
-						</video>
+						<video id="self-video" class="vids"></video>
 						<div id="remotes">
-							<video id="remove-video" class="vids">
-	  							<source src="rando.mp4" type="video/mp4">
-	  							Your browser does not support the video tag.
-							</video>
 						</div>
 					</div>
 					<div class="code-box" id="self-code-box">
@@ -58,8 +49,8 @@
 						</div>
 						<div class="code-wrapper" id="self-code-wrapper">
 							<textarea class="code" id="self-code"></textarea>
-							<button type="button" class="btn btn-success btn-sm pull-right code-button" id="runCode"><i class="fa fa-play"></i> Run</button>
-							<button type="button" class="btn btn-info btn-sm pull-right code-button" id="saveCode"><i class="fa fa-floppy-o"></i> Save</button>
+							<button class="btn btn-success btn-sm pull-right code-button" id="runCode"><i class="fa fa-play"></i> Run</button>
+							<button class="btn btn-info btn-sm pull-right code-button" id="saveCode"><i class="fa fa-floppy-o"></i> Save</button>
 						</div>
 					</div>
 					<div class="code-box" id="remote-code-box">
@@ -69,7 +60,7 @@
 						</div>
 						<div class="code-wrapper" id="remote-code-wrapper">
 							<textarea class="code" id="remote-code" readonly></textarea>
-							<button type="button" class="btn btn-warn btn-sm pull-right code-button" id="forkCode"><i class="fa fa-code-fork"></i> Fork</button>
+							<button class="btn btn-warn btn-sm pull-right code-button" id="forkCode"><i class="fa fa-code-fork"></i> Fork</button>
 						</div>
 					</div>
 				</div>

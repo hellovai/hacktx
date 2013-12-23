@@ -11,18 +11,19 @@
 	border: solid lightgray 1px;
 }
 
-.plugins .toggles {
-	float: left;
-	width: 80%;
-	height: 100%;
-}
-
-.toggles #question-box{
+.plugins #question-box{
 	padding: 10px 15px;
-	width: 33%;
+	width: 25%;
 	height: 100%;
 	overflow: auto;
 	float: left;
+}
+
+.plugins .toggles {
+	float: left;
+	width: 55%;
+	height: 100%;
+	overflow-x: none; 
 }
 
 .toggles #video-box {
@@ -31,10 +32,10 @@
 }
 
 	#video-box .vids, #video-box #remotes {
-		width: 33%;
+		width: 50%;
 		height: 100%;
-		padding-right: 2px;
 		float: left;
+		background: black;
 	}
 
 	#video-box #remotes video {
@@ -43,12 +44,15 @@
 	}
 	
 .toggles .code-box {
-	width: 33%;
+	width: 49.5%;
 	height: 67%;
 	float: left;
-	padding-right:2px; 
 	overflow: hidden;
 	position: relative;
+}
+
+#remote-code-box {
+	float:right;
 }
 
 	.toggles .code-box .code-button {
