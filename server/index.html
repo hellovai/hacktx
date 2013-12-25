@@ -21,8 +21,7 @@
 	<div class="pure-g" id="content">
 		<div id="help"><button class="btn-small btn blandme" id="tutorial" data-toggle="tooltip" title="Click me" data-placement="left"><i class="fa fa-lg fa-question-circle"></i></button></div>
 		<div class="pure-u-1-24 menu-container">
-			<ul class="menu">
-			<li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:#f6a6a6" id="login" data-toggle="tooltip" title="" data-placement="right" data-original-title="Login"> 					<i class="fa fa-lg fa-github-alt"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:green" id="toggleQuestion" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Question!"> 					<i class="fa fa-lg fa-question"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:purple" id="videoToggle" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Video"> 					<i class="fa fa-lg fa-video-camera"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:orange" id="codeToggle" data-toggle="tooltip" title="" data-placement="right" data-original-title="Hide Code"> 					<i class="fa fa-lg fa-code"></i>					</button></li><li class="pure-u-3-4"> 					<button class="btn menu-item" style="background:red" id="toggleRoom" data-toggle="tooltip" title="" data-placement="right" data-original-title="New Partner"> 					<i class="fa fa-lg fa-random"></i>					</button></li></ul>
+			<ul class="menu"></ul>
 		</div>
 
 		<!-- <div class="pure-u-23-24 obj-container" style="background-color:red" id="main"> -->
@@ -43,7 +42,7 @@
 						</div>
 					</div>
 					<div class="code-box" id="self-code-box">
-						<a href="#"><i class="fa fa-sort-down" id="self-result-toggle"></i></a>
+						<a href="#"><i class="fa fa-plus-square" id="self-result-toggle"></i></a>
 						<div class="run-result-wrapper" id="self-result-wrapper">
 							<div class="run-result" id="self-result"></div>
 						</div>
@@ -54,7 +53,7 @@
 						</div>
 					</div>
 					<div class="code-box" id="remote-code-box">
-						<a href="#"><i class="fa fa-sort-down" id="remote-result-toggle"></i></a>
+						<a href="#"><i class="fa fa-plus-square" id="remote-result-toggle"></i></a>
 						<div class="run-result-wrapper" id="remote-result-wrapper">
 							<div class="run-result" id="remote-result"></div>
 						</div>
@@ -76,6 +75,24 @@
 		</div>
 	</div>
 
+	<div id="modal-background"></div>
+	<div id="modal-content">
+		<div>
+			<h3><i class="fa fa-github fa-1x"></i> Sign in with Github</h3>
+		</div>
+		<hr />
+		<div id="loginForm" class="pure-form">
+		    <fieldset class="pure-group">
+		        <input type="text" class="pure-u-1" placeholder="Username" name="username">
+		        <input type="password" class="pure-u-1" placeholder="Password" name="password">
+		    </fieldset>
+		    <fieldset class="pure-group">
+		    	<button id="signin" class="pure-button pure-input-1 pure-button-primary">Sign in</button>
+		    </fieldset>
+		</div>
+		<a href="https://github.com/join" target="_newtab" class="register">Register</a>
+	</div>
+
 	<!-- The fucking javascript -->
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery-blink.js"></script>
@@ -92,13 +109,14 @@
 	<script type="text/javascript" src="js/plugins.js"></script>
 	<script type="text/javascript" src="js/custom.js"></script>
 	<script src="js/signaling-base.js"></script> 
+	<script type="text/javascript" src="js/buttons.js"></script>
 	<script type="text/javascript">
 	var selfEdit = 1;
 	var remoteEdit = 1;
 	$(document).ready(function() {
-		// createMenu();
 		$(window).ready(updateHeight);
 		$(window).resize(updateHeight);
+		createMenu();
 		$('#tutorial').tooltip();
 		selfEdit = CodeMirror.fromTextArea(document.getElementById("self-code"), {
 			mode: {name: "python",
@@ -124,12 +142,12 @@
 		selfEdit.setSize("100%", "100%");
 		remoteEdit.setSize("100%", "100%");
 		write_question('The question appears here!', 'To get started simply log in with your github and learn some latin. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
-		$('.menu-item').tooltip({
-			trigger:'hover',
-		});
 	});
+	$("#modal-launcher, #modal-background, #modal-close").click(function () {
+		$("#modal-content,#modal-background").toggleClass("active");
+	});
+	$('#signin').click(login);
 	</script>
-	<script type="text/javascript" src="js/buttons.js"></script>
 </body>
 
 </html>

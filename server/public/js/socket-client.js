@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://mealmaniac:3000/');
 
 socket.on('notif', function (message) {
 	write_alert(message);
@@ -19,6 +19,7 @@ socket.on('solo', function (partner) {
 	else
 		write_alert("Your partner has left!");
 	leaveWebRTC();
+	resetBox("remote");
 	notify(2);
 });
 
@@ -51,4 +52,8 @@ socket.on('runStatus', function( me, result ) {
 
 socket.on('updateCode', function (newdata) {
 	remoteEdit.setValue(newdata);
+});
+
+socket.on('loggedIn', function (username) {
+	write_alert('Welcome ' + username + '! Your <a href="http://github.com/' + username + '/prepair.me">Prepair.me</a> repo is now connected');
 });

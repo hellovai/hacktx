@@ -78,8 +78,8 @@
 
 	div.code-box a i {
 		position: absolute;
-		top: 0px;
-		right: 5px;
+		top: 1px;
+		right: 2px;
 		z-index: 1;
 	}
 

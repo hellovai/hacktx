@@ -5,10 +5,12 @@ var config = require('./config')
 	, http = require('http')
 	, socketio = require('socket.io')
 	, uuid = require('node-uuid')
+	, url = require('url')
 	, chat = require('./chat')
 	, globals = require('./globals')
 	, question = require('./question')
-	, sandbox = require('./sandbox');
+	, sandbox = require('./sandbox')
+	, git = require('./git');
 
 
 var server = http.createServer(app).listen(config.port);
@@ -18,6 +20,17 @@ var isConnected = globals.isConnected;
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
+});
+
+app.get('/login', function (req, res) {
+	console.log(git.auth_url);
+	res.writeHead(301, {'Content-Type': 'text/plain', 'Location': git.auth_url})
+    res.end('Redirecting to ' + git.auth_url);
+});
+
+app.get('/verify', function(req, res) {
+	uri = url.parse(req.url);
+	git.login(uri.query, res)
 });
 
 var queue = globals.queue;
@@ -52,6 +65,7 @@ io.sockets.on('connection', function (socket) {
 	socket.searching = false;
 	socket.question = undefined;
 	socket.loggedIn = false;
+	socket.paired = false;
     socket.resources = {
         screen: false,
         video: true,
@@ -61,7 +75,6 @@ io.sockets.on('connection', function (socket) {
 	users[socket.id] = socket;
 	
 	socket.on('disconnect', function () {
-		removeFeed();
 		chat.leave(socket);
 		var i = queue.indexOf(socket.id);
 		if(i != -1) {
@@ -117,14 +130,18 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// git events
-	socket.on('login', function (argument) {
-		// body...
+	socket.on('login', function (username, password) {
+		
 	});
 	socket.on('logout', function (argument) {
 		// body...
 	});
-	socket.on('commit', function (argument) {
-		// body...
+	socket.on('save', function (updatedFile) {
+		if(socket.loggedIn) {
+			socket.emit('notif', 'We are working hard to get this feature!');
+		} else {
+			socket.emit('notif', 'Save Failed! Please log in!');
+		}
 	});
 
 	//webrtc crap

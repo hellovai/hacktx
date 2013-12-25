@@ -1,10 +1,10 @@
 // Menu Functions
 function createMenu() {
-	var menu_items = [ {img:'github-alt', id:'login', color:'#f6a6a6', title:'Login'},
-						{img:'question', id:'toggleQuestion', color:'green', title:'New Question!'},
-						{img:'video-camera', id:'videoToggle', color:'purple', title:'Hide Video'},
-						{img:'code', id:'codeToggle', color:'orange', title:'Hide Code'},
-						{img:'random', id:'toggleRoom', color:'red', title:'New Partner'},
+	var menu_items = [ {img:'github-alt', id:'login', color:'#f6a6a6', title:'Login', reaction:loginToggle},
+						{img:'question', id:'toggleQuestion', color:'green', title:'New Question!', reaction:toggleQuestion},
+						{img:'video-camera', id:'videoToggle', color:'purple', title:'Hide Video', reaction:videoToggle},
+						{img:'code', id:'codeToggle', color:'orange', title:'Hide Code', reaction:codeToggle},
+						{img:'random', id:'toggleRoom', color:'red', title:'New Partner', reaction:toggleRoom},
 					];
 	var div = $("ul[class='menu']");
 	for(i = 0; i < menu_items.length; i++) {
@@ -13,6 +13,10 @@ function createMenu() {
 					<button class="btn menu-item" style="background:' + item.color + '" id="' + item.id + '" data-toggle="tooltip" title="' + item.title + '" data-placement="right"> \
 					<i class="fa fa-lg fa-' + item.img + '"></i>\
 					</button></li>');
+		$('#' + item.id).click(item.reaction);
+		$('#' + item.id).tooltip({
+			trigger:'hover',
+		});
 	}
 }
 

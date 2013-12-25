@@ -18,6 +18,8 @@ var join = function (socket) {
 		var partner = users[socket.pid]
 		socket.searching = false;
 		partner.searching = false;
+		socket.paired = true;
+		partner.paired = true;
 		socket.emit('match', partner.github, room);
 		partner.emit('match', socket.github, room);
 		return true;
@@ -25,17 +27,32 @@ var join = function (socket) {
 	return false;
 }
 
+function removeFeed(socket, partner, type) {
+    partner.emit('remove', {
+        id: socket.id,
+        type: type
+    });
+}
+
 var leave = function (socket) {	
+	console.log("leaving:");
 	if(isConnected(socket)) {
+		console.log("leaving: partner");
 		var partner = users[socket.pid];
+		console.log("leaving: room");
 		socket.leave(socket.room);
 		partner.leave(partner.room);
 		delete partner.pid;
 		delete partner.room;
+		partner.paired = false;
+		removeFeed(socket, partner);
+		removeFeed(partner, socket);
 		partner.emit('solo', false);
 	}
+	console.log("leaving: self");
 	delete socket.pid;
 	delete socket.room;
+	socket.paired = false;
 	socket.emit("solo", true);
 }
 

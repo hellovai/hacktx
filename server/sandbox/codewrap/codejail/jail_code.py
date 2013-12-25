@@ -183,12 +183,14 @@ def jail_code(command, code=None, files=None, argv=None, stdin=None,
             else:
                 shutil.copytree(filename, dest, symlinks=True)
 
+        filename = "stdin"
+
         # Create the main file.
         if code:
-            with open(os.path.join(homedir, "jailed_code"), "w") as jailed:
+            with open(os.path.join(homedir, filename), "w") as jailed:
                 jailed.write(code)
 
-            argv = ["jailed_code"] + argv
+            argv = [filename] + argv
 
         cmd = []
 

@@ -16,6 +16,16 @@ function write_message (me, message) {
 function write_question (title, data) {
 	$('#question-box').find("h1").html(title);
 	$('#question-box').find("p").html(data);
+	resetBox("self");
+	resetBox("remote");
+}
+
+function resetBox (who) {
+	scroll_up(who);
+	$('#' + who + '-result').html('');
+	if(who == 'self') selfEdit.setValue('');
+	else if (who == 'remote') remoteEdit.setValue('');
+	// body...
 }
 
 function present (data) {
@@ -61,7 +71,7 @@ function present (data) {
 }
 
 function scroll_down(who) {
-	$("#" + who + "-result-toggle").removeClass("fa-sort-down").addClass("fa-sort-up");
+	$("#" + who + "-result-toggle").removeClass("fa-plus-square").addClass("fa-minus-square");
 	var allowedHt = $("#" + who + "-result-wrapper").parent().height();
 	var ht = Math.round( Math.max( 0.05 * allowedHt , Math.min($("#" + who + "-result-wrapper").find(".run-result")[0].scrollHeight, allowedHt * 0.5) ) * 100.0 / allowedHt );
 	$("#" + who + "-result-wrapper").animate({
@@ -73,7 +83,7 @@ function scroll_down(who) {
 }
 
 function scroll_up (who) {
-	$("#" + who + "-result-toggle").removeClass("fa-sort-up").addClass("fa-sort-down");
+	$("#" + who + "-result-toggle").removeClass("fa-minus-square").addClass("fa-plus-square");
 	$("#" + who + "-result-wrapper").animate({
 		height:"5%"
 	}, 400);

@@ -1,4 +1,5 @@
 config = {
+	"secret":"ABCD12345DEF",
 	"port":3000,
 	"host":"localhost",
 	"mongo": {
@@ -20,6 +21,10 @@ config = {
 		"critical":25,
 		"decay":0.90,
 		"threshhold": 0.80
+	},
+	"github": {
+		"id":YOUR_ID,
+		"secret":YOUR_SECRET
 	}
 };
 

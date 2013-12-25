@@ -10,7 +10,7 @@ db.questions.insert({
 db.questions.insert({
 	title:"Hello World"
 	,folder:"Hello-World"
-	,details:"Write a program that reads a name from stdin and write 'Hello <name>!'"
+	,details:"Write a program that reads a name from stdin and write 'Hello [name]!'"
 	,tags:["easy",]
 	,level:1
 	,random:Math.random()
