@@ -14,11 +14,10 @@ webrtc.on('readyToCall', function () {
 
 
 function joinWebRTC (roomname, delay) {
-	console.log(roomname, delay);
-	if(delay > 2000)
-		console.log("failed!")
+	if(delay > 400)
+		return
 	else if(!RTCready)
-		setTimeout(joinWebRTC(roomname), delay*2)
+		setTimeout(joinWebRTC(roomname, delay * 2), delay );
 	else
 		webrtc.joinRoom(roomname);
 }

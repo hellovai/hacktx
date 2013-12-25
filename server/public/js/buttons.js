@@ -96,6 +96,11 @@ function loginToggle() {
 	$('input[name=username]').focus()
 }
 
+function infoToggle () {
+	$("#login-content,#modal-background").toggleClass("active");
+	socket.emit('getUserInfo');
+}
+
 function login() {
-	socket.emit('login', $('input[name=username]').val(), $('input[name=password]').val()); 
+	socket.emit('login', document.cookie);
 }

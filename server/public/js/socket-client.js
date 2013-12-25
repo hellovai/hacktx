@@ -1,4 +1,4 @@
-var socket = io.connect('http://www.mealmaniac.com:3000/');
+var socket = io.connect('http://mealmaniac.com:3000/');
 
 socket.on('notif', function (message) {
 	write_alert(message);
@@ -6,9 +6,10 @@ socket.on('notif', function (message) {
 })
 
 // chat events
-socket.on('match', function (github, room) {
+socket.on('match', function (user, room) {
 	$('#conversation').html('');
-	write_alert("We found a partner!");
+	write_alert("Now connected to " + user.username);
+	setRemote(user);
 	notify(1);
 	joinWebRTC(room, 10);
 });
@@ -54,6 +55,16 @@ socket.on('updateCode', function (newdata) {
 	remoteEdit.setValue(newdata);
 });
 
-socket.on('loggedIn', function (username) {
-	write_alert('Welcome ' + username + '! Your <a href="http://github.com/' + username + '/prepair.me">Prepair.me</a> repo is now connected');
+socket.on('login', function (user) {
+	$('#modal-content,#modal-background').removeClass('active');
+	setSelf(user);
+	$('#viewProfile').click(infoToggle);
+	$('#viewProfile').tooltip({
+			trigger:'hover',
+	});
+});
+
+socket.on('rLogin', function (user) {
+	write_alert(remoteName + " is now know as " + user.username );
+	setRemote(user);
 });

@@ -36,7 +36,7 @@
                 function n(e) {
                     var t, n, s = this,
                         a = e || {}, u = this.config = {
-                            url: "http://www.mealmaniac.com:3000",
+                            url: "http://mealmaniac.com:3000",
                             debug: !1,
                             localVideoEl: "",
                             remoteVideosEl: "",

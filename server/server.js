@@ -12,25 +12,33 @@ var config = require('./config')
 	, sandbox = require('./sandbox')
 	, git = require('./git');
 
+app.configure(function () {
+	app.use(express.static(__dirname + '/public'));
+	app.use(express.cookieParser(config.secret));
+    app.use(express.session({secret: config.secret
+    	,key: 'express.sid'
+    }));
+});
 
 var server = http.createServer(app).listen(config.port);
 var io = socketio.listen(server);
 var isConnected = globals.isConnected;
 
-app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
 
 app.get('/login', function (req, res) {
-	console.log(git.auth_url);
-	res.writeHead(301, {'Content-Type': 'text/plain', 'Location': git.auth_url})
+	res.statusCode = 301;
+	res.setHeader('Content-Type', 'text/plain');
+	res.setHeader('Location', git.auth_url);
+	res.cookie('gitLogin', 'Not In');
     res.end('Redirecting to ' + git.auth_url);
 });
 
 app.get('/verify', function(req, res) {
 	uri = url.parse(req.url);
-	git.login(uri.query, res)
+	git.login(uri.query, req, res);
 });
 
 var queue = globals.queue;
@@ -56,6 +64,28 @@ function safeCb(cb) {
     }
 }
 
+var cookie = require('cookie');
+var connect = require('connect');
+
+io.set('authorization', function (handshakeData, accept) {
+
+  if (handshakeData.headers.cookie) {
+
+    handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
+
+    handshakeData.sessionID = connect.utils.parseSignedCookie(handshakeData.cookie['express.sid'], 'secret');
+
+    if (handshakeData.cookie['express.sid'] == handshakeData.sessionID) {
+      return accept('Cookie is invalid.', false);
+    }
+
+  } else {
+    return accept('No cookie transmitted.', false);
+  } 
+
+  accept(null, true);
+});
+
 io.sockets.on('connection', function (socket) {
 	// objects
 	socket.github = undefined;
@@ -66,6 +96,11 @@ io.sockets.on('connection', function (socket) {
 	socket.question = undefined;
 	socket.loggedIn = false;
 	socket.paired = false;
+	socket.user = {
+		"username":"Anon"
+		,"avatar_ur":"http://placekitten.com/250/250"
+		,"points":9001
+	};
     socket.resources = {
         screen: false,
         video: true,
@@ -73,8 +108,7 @@ io.sockets.on('connection', function (socket) {
     };
 
 	users[socket.id] = socket;
-	console.log('Connected ' + socket.id);
-	
+
 	socket.on('disconnect', function () {
 		chat.leave(socket);
 		var i = queue.indexOf(socket.id);
@@ -94,7 +128,6 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('notif', 'Leaving Queue!');
 		} else if(chat.join(socket)) {
 			question.setQ(socket);
-			console.log(socket.room);
 		}
 	});
 	socket.on('leaveRoom', function () {
@@ -131,8 +164,16 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// git events
-	socket.on('login', function (username, password) {
-		
+	socket.on('login', function (info) {
+		if(!socket.loggedIn) {
+			var token = cookie.parse(info).gitLogin;
+			if(token != 'Not In' ) {
+				socket.loggedIn = true;
+				socket.github = git.getClient(token);
+				git.accessAccount(socket);
+			} else
+				socket.emit('notif', 'Not yet logged in');
+		}
 	});
 	socket.on('logout', function (argument) {
 		// body...

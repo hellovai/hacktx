@@ -17,8 +17,11 @@ db.questions.insert({
 })
 
 db.users.insert({
-	"name":"John Doe"
-	,"github":"awesomeness"
+	"github": {
+		"username":"awesomeness"
+		,"avatar":"http://random"
+		,"id":"id"
+	}
 	,"points":9001
 	,"questions": {
 		"viewed":[]

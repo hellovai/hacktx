@@ -1,14 +1,16 @@
 // menu items
 
 // generic functions
+var selfName = "You";
+var remoteName = "Partner";
 function write_alert (message) {
 	$('#conversation').append('<font class="message message-alert">' + message + '</font><br />');
 	$("#conversation").scrollTop($('#conversation')[0].scrollHeight);
 }
 
 function write_message (me, message) {
-	var who = ["c_remote", "Partner"];
-	if(me) who = ["c_self", "You"];
+	var who = ["c_remote", remoteName];
+	if(me) who = ["c_self", selfName];
 	$('#conversation').append('<font class="message"><font class="' + who[0] + '">' + who[1] + ':</font> ' + message + '</font><br />');
 	$("#conversation").scrollTop($('#conversation')[0].scrollHeight);
 }
@@ -95,4 +97,15 @@ function scroll_up (who) {
 function show_result (who, div, result) {
 	$(div).html(present(JSON.parse(result)));
 	scroll_down(who);
+}
+
+function setSelf (user) {
+	write_alert('Welcome ' + user.username +'!');
+	$('#login').parent().html('<a href="#" id="viewProfile" data-toggle="tooltip" title="" data-placement="right" data-original-title="Profile"><img src="' + user.avatar_url + '" class="logged-in"></a>');
+}
+
+function setRemote (user) {
+	remoteName = user.username;
+	$('#partnerImg img').attr('src', user.avatar_url);
+	$('#partnerData').html(user.username + "<br />" + user.points);
 }

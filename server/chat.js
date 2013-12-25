@@ -20,8 +20,8 @@ var join = function (socket) {
 		partner.searching = false;
 		socket.paired = true;
 		partner.paired = true;
-		socket.emit('match', partner.github, room);
-		partner.emit('match', socket.github, room);
+		socket.emit('match', partner.user, room);
+		partner.emit('match', socket.user, room);
 		return true;
 	}
 	return false;
