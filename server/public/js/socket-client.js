@@ -1,4 +1,4 @@
-var socket = io.connect('http://mealmaniac:3000/');
+var socket = io.connect('http://www.mealmaniac.com:3000/');
 
 socket.on('notif', function (message) {
 	write_alert(message);

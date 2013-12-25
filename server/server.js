@@ -73,6 +73,7 @@ io.sockets.on('connection', function (socket) {
     };
 
 	users[socket.id] = socket;
+	console.log('Connected ' + socket.id);
 	
 	socket.on('disconnect', function () {
 		chat.leave(socket);

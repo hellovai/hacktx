@@ -21,3 +21,6 @@ config.js
 
 #MAC
 .DS_store
+
+#temp files
+temp.js
