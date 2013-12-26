@@ -15,8 +15,16 @@ var config = require('./config')
 app.configure(function () {
 	app.use(express.static(__dirname + '/public'));
 	app.use(express.cookieParser(config.secret));
-    app.use(express.session({secret: config.secret
+    app.use(express.session({
+    	secret: config.secret
     	,key: 'express.sid'
+    	,cookie: {
+    		path: '/'
+    		// ,secure: true
+    		,signed: true
+    		,httpOnly: true
+    		,maxAge: 9000000
+    	}
     }));
 });
 
@@ -32,8 +40,20 @@ app.get('/login', function (req, res) {
 	res.statusCode = 301;
 	res.setHeader('Content-Type', 'text/plain');
 	res.setHeader('Location', git.auth_url);
-	res.cookie('gitLogin', 'Not In');
     res.end('Redirecting to ' + git.auth_url);
+});
+
+app.get('/logout', function (req, res) {
+	res.statusCode = 200;
+	res.setHeader('Content-Type', 'text/html');
+	res.cookie('gitLogin', 'Not In', {
+		maxAge: 1
+		,httpOnly: true
+		,signed: true
+		,path:'/'
+		,domain: '.mealmaniac.com'
+	});
+	res.end("<body onLoad=\"window.open('', '_self', '');setTimeout(function() {window.close();}, 100);\">Logged In!</body>");
 });
 
 app.get('/verify', function(req, res) {
@@ -68,13 +88,15 @@ var cookie = require('cookie');
 var connect = require('connect');
 
 io.set('authorization', function (handshakeData, accept) {
-
+	console.log(handshakeData.headers)
   if (handshakeData.headers.cookie) {
 
     handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
 
-    handshakeData.sessionID = connect.utils.parseSignedCookie(handshakeData.cookie['express.sid'], 'secret');
-
+    handshakeData.sessionID = connect.utils.parseSignedCookie(handshakeData.cookie['express.sid'], config.secret);
+    if('gitLogin' in handshakeData.cookie)
+    	handshakeData.login = connect.utils.parseSignedCookie(handshakeData.cookie['gitLogin'], config.secret);
+    else handshakeData.login = undefined;
     if (handshakeData.cookie['express.sid'] == handshakeData.sessionID) {
       return accept('Cookie is invalid.', false);
     }
@@ -86,6 +108,12 @@ io.set('authorization', function (handshakeData, accept) {
   accept(null, true);
 });
 
+var defaultUser = {
+		"username":"Anon"
+		,"avatar_ur":"http://placekitten.com/250/250"
+		,"points":9001
+	};
+
 io.sockets.on('connection', function (socket) {
 	// objects
 	socket.github = undefined;
@@ -96,18 +124,16 @@ io.sockets.on('connection', function (socket) {
 	socket.question = undefined;
 	socket.loggedIn = false;
 	socket.paired = false;
-	socket.user = {
-		"username":"Anon"
-		,"avatar_ur":"http://placekitten.com/250/250"
-		,"points":9001
-	};
+	socket.token = socket.handshake.login;
+	socket.user = defaultUser;
     socket.resources = {
         screen: false,
         video: true,
         audio: false
     };
-
 	users[socket.id] = socket;
+	if(socket.token !== undefined)
+		loginBase();
 
 	socket.on('disconnect', function () {
 		chat.leave(socket);
@@ -163,20 +189,51 @@ io.sockets.on('connection', function (socket) {
 		sandbox.run(socket, code);
 	});
 
-	// git events
-	socket.on('login', function (info) {
+	function loginBase(cookie) {
+		// console.log("Attempting: ", socket.handshake.headers);
 		if(!socket.loggedIn) {
-			var token = cookie.parse(info).gitLogin;
-			if(token != 'Not In' ) {
+			console.log('in');
+			// socket.handshake.cookie.touch().save();
+			var token = socket.token;
+			if (token === undefined)
+				token = cookie.parse(socket.handshake.headers.cookie).gitLogin;
+			if (token == 'goodtry') {
+				socket.emit('notif', 'Try logging in again');
+			} else if(token != 'Not In') {
+				console.log('trying', token);
 				socket.loggedIn = true;
-				socket.github = git.getClient(token);
+				socket.token = token;
+				socket.gClient = git.getClient(token);
+				socket.github = socket.gClient.me();
 				git.accessAccount(socket);
 			} else
 				socket.emit('notif', 'Not yet logged in');
 		}
+		console.log('caught login');
+	}
+
+	function logout() {
+		if(socket.loggedIn) {
+			// socket.handshake.cookie.touch().save()
+			socket.github = undefined;
+			socket.token = undefined;
+			socket.gClient = undefined;
+			socket.gRepo  = undefined;
+			socket.loggedIn = false;
+			socket.user = defaultUser;
+			console.log(socket.handshake.headers.cookie);
+			socket.emit('login', socket.user);
+  			if(isConnected(socket))
+    			users[socket.pid].emit('rLogin', socket.user);
+			}
+	}
+
+	// git events
+	socket.on('login', function () {
+		loginBase();
 	});
 	socket.on('logout', function (argument) {
-		// body...
+		logout();
 	});
 	socket.on('save', function (updatedFile) {
 		if(socket.loggedIn) {

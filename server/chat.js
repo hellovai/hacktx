@@ -35,11 +35,8 @@ function removeFeed(socket, partner, type) {
 }
 
 var leave = function (socket) {	
-	console.log("leaving:");
 	if(isConnected(socket)) {
-		console.log("leaving: partner");
 		var partner = users[socket.pid];
-		console.log("leaving: room");
 		socket.leave(socket.room);
 		partner.leave(partner.room);
 		delete partner.pid;
@@ -49,7 +46,6 @@ var leave = function (socket) {
 		removeFeed(partner, socket);
 		partner.emit('solo', false);
 	}
-	console.log("leaving: self");
 	delete socket.pid;
 	delete socket.room;
 	socket.paired = false;

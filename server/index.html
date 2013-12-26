@@ -92,12 +92,25 @@
 		</div>
 		<a href="https://github.com/join" target="_newtab" class="register">Register</a>
 	</div>
-	<div id="login-content">
-		<div>
-			<h3>Welcome</h3>
-		</div>
-		<hr />
-	</div>
+
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="logout" type="button" class="btn btn-primary">Logout</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 	<!-- The fucking javascript -->
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -149,15 +162,6 @@
 		remoteEdit.setSize("100%", "100%");
 		write_question('The question appears here!', 'To get started simply log in with your github and learn some latin. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
 	});
-	$("#modal-launcher, #modal-background, #modal-close").click(function () {
-		$("#modal-background").toggleClass("active");
-		if($('#login').length > 0) {
-			$('#modal-content').toggleClass("active");
-		} else {
-			$("#login-content").toggleClass("active");
-		}
-	});
-	$('#signin').click(login);
 	</script>
 </body>
 

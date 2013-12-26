@@ -18,7 +18,18 @@ var state = auth_url.match(/&state=([0-9a-z]{32})/i);
 
 function accessAccount (socket) {
   socket.github.info(function (err, data, headers) {
-    accessDB(socket, data);
+    if(!err) {
+      accessDB(socket, data);
+      socket.gRepo = socket.gClient.repo(data.login + '/' + config.repo);
+      socket.gRepo.info(function (err, data, header) {
+        if(err) createRepo(socket);
+      })
+    } else {
+      if(err.statusCode == 401){
+        socket.token = null;
+        delete socket.handshake.cookie['gitLogin'];
+      }
+    }
   });
 }
 
@@ -29,7 +40,6 @@ function accessDB (socket, data) {
     else if (!res)
       addToDB(socket,data);
     else {
-      console.log('already in db: ', res);
       logSocketIn(socket, res);
     }
   });
@@ -53,8 +63,17 @@ function addToDB (socket, data) {
     if(err || !doc) {
       socket.emit('notif', 'Try logging in again again!');
     } else {
-      console.log('added!', doc);
       logSocketIn(socket, doc[0]);
+    }
+  });
+}
+
+function createRepo(socket) {
+  socket.github.fork(config.user + '/' + config.repo, function(err, data, headers){
+    if(err || !data) {
+      console.log(err);
+    } else {
+      socket.emit('notif', "You have forked " + config.questionRepo);
     }
   });
 }
@@ -73,32 +92,42 @@ function logSocketIn (socket, data) {
 
 function login (data, req, res) {
 	var values = qs.parse(data);
-    // Check against CSRF attacks
-    if (!state || state[1] != values.state) {
-      res.writeHead(403, {'Content-Type': 'text/plain'});
-      res.end('Not Allowed ' + state + ' ' + state[1] + ' ' + values.state );
-    } else {
-      github.auth.login(values.code, function (err, token) {
-        var ck = cookie.serialize('gitLogin', token, { 
-            expires: new Date(Date.now() + 900000)
-            ,maxAge: 900000
-            ,httpOnly: true 
-            ,secure: true
-            ,path:'/'
-            ,domain: 'mealmaniac.com'
-          });
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/plain');
-        if(req.cookies.gitLogin)
-          res.cookie('gitLogin', token);
-        // res.writeHead(200, {'Set-Cookie': ck, 'Content-Type':'text/plain'});
-        res.end("<body onLoad=\"window.open('', '_self', '');window.close();\">"+ token +"</body>");
-    	});
-	}
+  // Check against CSRF attacks
+  res.setHeader('Content-Type', 'text/html');
+  if (!state || state[1] != values.state) {
+    res.statusCode = 403;
+    var ck = cookie.serialize('gitLogin', "goodtry", { 
+      expires: new Date(Date.now() + 900000)
+      ,maxAge: 900000
+      ,httpOnly: true 
+      ,signed: true
+      // ,secure: true
+      ,path:'/'
+      ,domain: '.mealmaniac.com'
+    });
+    res.setHeader('Set-Cookie', ck);
+    res.end("<body onLoad=\"window.open('', '_self', '');setTimeout(function() {window.close();}, 100);\"></body>");
+  } else {
+    github.auth.login(values.code, function (err, token) {
+      var ck = cookie.serialize('gitLogin', token, { 
+        expires: new Date(Date.now() + 900000)
+        ,maxAge: 900000
+        ,httpOnly: true 
+        // ,secure: true
+        ,signed: true
+        ,path:'/'
+        ,domain: '.mealmaniac.com'
+      });
+      res.statusCode = 200;
+      res.setHeader('Set-Cookie', ck);
+      // res.cookie('gitLogin', token, {secure: true, httpOnly: true, signed: true, expires: new Date(Date.now() + 900000)});
+      res.end("<body onLoad=\"window.open('', '_self', '');setTimeout(function() {window.close();}, 100);\">Logged In!</body>");
+    });
+  }
 }
 
 function getClient (token) {
-  return github.client(token).me();
+  return github.client(token);
 }
 
 module.exports.login = login;

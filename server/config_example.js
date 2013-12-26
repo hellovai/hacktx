@@ -24,7 +24,9 @@ config = {
 	},
 	"github": {
 		"id":YOUR_ID,
-		"secret":YOUR_SECRET
+		"secret":YOUR_SECRET,
+		"repo":NOTNULL,
+		"user":NOTNULL
 	}
 };
 

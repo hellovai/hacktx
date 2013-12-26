@@ -91,16 +91,38 @@ $('#saveCode').click(function() {
 	socket.emit('save', selfEdit.getValue());
 });
 
+$('#logout').click(function() {
+	logout();
+});
+
 function loginToggle() {
 	$("#modal-content,#modal-background").toggleClass("active");
 	$('input[name=username]').focus()
 }
 
 function infoToggle () {
-	$("#login-content,#modal-background").toggleClass("active");
+	$('#infoModal').modal('toggle');
 	socket.emit('getUserInfo');
 }
 
 function login() {
-	socket.emit('login', document.cookie);
+	var windw = popupwindow('/login', 'Login to Prepair.me', 1200, 400);
+	waitForClose(windw, true);
+}
+
+function logout() {
+	var windw = popupwindow('/logout', 'Logout of Prepair.me', 1200, 400);
+	waitForClose(windw, false);
+}
+
+function popupwindow(url, title, w, h) {
+  var left = (screen.width/2)-(w/2);
+  var top = (screen.height/2)-(h/2);
+  return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+}
+
+function waitForClose (wind, ctr) {
+	if (!wind.closed) setTimeout( function() {waitForClose(wind, ctr)}, 500);
+	else if(ctr) socket.emit('login', document.cookie);
+	else socket.emit('logout');
 }

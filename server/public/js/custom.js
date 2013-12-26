@@ -1,6 +1,6 @@
 // Menu Functions
 function createMenu() {
-	var menu_items = [ {img:'github-alt', id:'login', color:'#f6a6a6', title:'Login', reaction:loginToggle},
+	var menu_items = [ {img:'github-alt', id:'login', color:'#f6a6a6', title:'Login via Github', reaction:login},
 						{img:'question', id:'toggleQuestion', color:'green', title:'New Question!', reaction:toggleQuestion},
 						{img:'video-camera', id:'videoToggle', color:'purple', title:'Hide Video', reaction:videoToggle},
 						{img:'code', id:'codeToggle', color:'orange', title:'Hide Code', reaction:codeToggle},
