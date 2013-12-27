@@ -40,7 +40,7 @@ ul.menu li {
   text-align: center; 
   text-align: center;
   list-style-type: none;
-  padding: 25% 0%;
+  padding: 12.5% 0%;
   margin: 0 12.5%;
 }
 
@@ -54,6 +54,10 @@ ul.menu li button {
 ul.menu li img.logged-in {
   width: 100%;
   height: 100%;
+}
+
+ul.menu li button.no-padding {
+    padding: 2%;
 }
 
 /* OBJ Container */
@@ -167,3 +171,13 @@ transition:all 1s ease-in-out;
 -ms-animation:blink normal 2s infinite ease-in-out; /* IE */
 animation:blink normal 2s infinite ease-in-out; /* Opera and prob css3 final iteration */
 }​
+
+/*Code mirror test*/
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}

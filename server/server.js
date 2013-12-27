@@ -109,7 +109,7 @@ io.set('authorization', function (handshakeData, accept) {
 });
 
 var defaultUser = {
-		"username":"Anon"
+		"nick":"Anon"
 		,"avatar_ur":"http://placekitten.com/250/250"
 		,"points":9001
 	};
@@ -159,7 +159,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('leaveRoom', function () {
 		chat.leave(socket);
 	});
-	socket.on('messages', function (message) {
+	socket.on('chat', function (message) {
 		chat.sendMessage(socket, message);
 	});
 
@@ -214,7 +214,6 @@ io.sockets.on('connection', function (socket) {
 
 	function logout() {
 		if(socket.loggedIn) {
-			// socket.handshake.cookie.touch().save()
 			socket.github = undefined;
 			socket.token = undefined;
 			socket.gClient = undefined;
@@ -222,7 +221,7 @@ io.sockets.on('connection', function (socket) {
 			socket.loggedIn = false;
 			socket.user = defaultUser;
 			console.log(socket.handshake.headers.cookie);
-			socket.emit('login', socket.user);
+			socket.emit('logout');
   			if(isConnected(socket))
     			users[socket.pid].emit('rLogin', socket.user);
 			}

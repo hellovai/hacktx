@@ -1,15 +1,15 @@
 function toggleRoom() {
-	socket.emit('toggleRoom');
+	socket.toggleRoom();
 };
 
 function toggleQuestion () {
-	socket.emit('getQuestion');
+	socket.toggleQuestion();
 };
 
 
 
 $('#runCode').click( function() {
-	socket.emit('run', selfEdit.getValue());
+	socket.runCode(selfEdit.getValue());
 });
 
 $('#message').keyup(function(e) {
@@ -17,9 +17,7 @@ $('#message').keyup(function(e) {
 		$(this).blur();
 		var message = $('#message').val();
 		$('#message').val('');
-		if(message.length > 0 ) {
-			socket.emit('messages', message);
-		}
+		socket.chat(message);
 		$("#message").focus();
 	}
 });
@@ -58,29 +56,33 @@ function setCodeBoxHeight (ht) {
 	var selfWidth = codeBoxWidth[codeBox];
 	var remoteWidth = 99 - selfWidth;
 	selfEdit.setSize(remoteWidth.toString() + "%", ht);
+	se
 	remoteEdit.setSize(remoteWidth.toString() + "%", ht);
 }	
 
-var vidBox = true;
 function videoToggle () {
-	if(vidBox) {
+	if( typeof this.vidBox == "undefined")
+		this.vidBox = true;
+	if(this.vidBox) {
 		$('#video-box').animate({height:"1%"}, 400);
 		$('.code-box').animate({height:"99%"}, 400);
 	} else {
 		$('#video-box').animate({height:"33%"}, 400);
 		$('.code-box').animate({height:"67%"}, 400);
 	}
-	vidBox = !vidBox;
+	this.vidBox = !this.vidBox;
 };
 
-var codeBox = 1;
-var codeBoxWidth = [49.5, 84, 49.5, 25];
 function codeToggle () {
-	var selfWidth = codeBoxWidth[codeBox];
+	if ( typeof this.counter == 'undefined' ) {
+	  this.counter = 1;
+	  this.widthOptions = [49.5, 84, 49.5, 25];
+	}
+	var selfWidth = this.widthOptions[this.counter];
 	var remoteWidth = 99 - selfWidth;
 	$("#self-code-box").animate({width: selfWidth.toString() + "%" },400);
 	$("#remote-code-box").animate({width: remoteWidth.toString() + "%"},400);
-	codeBox = (codeBox + 1) % 4;
+	this.counter = (this.counter + 1) % 4;
 };
 
 $('#forkCode').click(function() {
@@ -88,7 +90,7 @@ $('#forkCode').click(function() {
 });
 
 $('#saveCode').click(function() {
-	socket.emit('save', selfEdit.getValue());
+	socket.saveCode(selfEdit.getValue());
 });
 
 $('#logout').click(function() {
@@ -102,7 +104,7 @@ function loginToggle() {
 
 function infoToggle () {
 	$('#infoModal').modal('toggle');
-	socket.emit('getUserInfo');
+	socket.acctInfo();
 }
 
 function login() {
@@ -123,6 +125,6 @@ function popupwindow(url, title, w, h) {
 
 function waitForClose (wind, ctr) {
 	if (!wind.closed) setTimeout( function() {waitForClose(wind, ctr)}, 500);
-	else if(ctr) socket.emit('login', document.cookie);
-	else socket.emit('logout');
+	else if(ctr) socket.login();
+	else socket.logout();
 }

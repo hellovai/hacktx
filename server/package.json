@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node session-server.js"
   },
   "dependencies": {
     "generate-key": "latest",
@@ -14,6 +14,7 @@
     "node-python":"latest",
     "octonode":"latest",
     "mongojs": "latest",
-    "simplesets": "latest"
+    "simplesets": "latest",
+    "session.socket.io": "latest"
   }
 }

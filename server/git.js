@@ -80,7 +80,7 @@ function createRepo(socket) {
 
 function logSocketIn (socket, data) {
   socket.user = {
-    "username":data.github.username
+    "nick":data.github.username
     ,"avatar_url":data.github.avatar
     ,"points":data.points
   };
@@ -130,6 +130,7 @@ function getClient (token) {
   return github.client(token);
 }
 
+module.exports.api = github;
 module.exports.login = login;
 module.exports.auth_url = auth_url;
 module.exports.getClient = getClient;

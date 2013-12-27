@@ -100,12 +100,19 @@ function show_result (who, div, result) {
 }
 
 function setSelf (user) {
-	write_alert('Welcome ' + user.username +'!');
-	$('#login').parent().html('<a href="#" id="viewProfile" data-toggle="tooltip" title="" data-placement="right" data-original-title="Profile"><img src="' + user.avatar_url + '" class="logged-in"></a>');
+	if(typeof user == "undefined") {
+		write_alert('Logged out!');
+		$("#infoModal").modal('hide');
+	} else { 
+		write_alert('Welcome ' + user.nick +'!');
+		$("#viewProfile").html('<img src="' + user.avatar_url + '" class="logged-in">');
+	}
+		$('#login').parent().toggle();
+		$( "#viewProfile").parent().toggle();
 }
 
 function setRemote (user) {
-	remoteName = user.username;
+	remoteName = user.nick;
 	$('#partnerImg img').attr('src', user.avatar_url);
-	$('#partnerData').html(user.username + "<br />" + user.points);
+	$('#partnerData').html(user.nick + "<br />" + user.points);
 }
