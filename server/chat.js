@@ -1,102 +1,97 @@
 // allows you to export join, leave, and sendMessage function for users
-var globals = require('./globals')
-	, rand = require("generate-key");
+var rand = require("generate-key")
+	, globals = require("./globals")
+	, config = require("./config").matching
+	, question = require("./question");
 
-var queue = globals.queue;
-var users = globals.users;
-var isConnected = globals.isConnected;
+var queue = globals.queue
+  , users = globals.users
+  , isConnected = globals.isConnected
+  , getPartner = globals.getPartner
+  , safeCb = globals.safeCallback
+  , removeQ = globals.removeQ;
 
-var config = require('./config').matching;
 var crit = Math.pow(config.decay, config.critical) * config.threshhold;
 
-var join = function (socket) {
-	socket.emit('notif', "Finding you a partner...");
+function join(socket) {
+	socket.emit("notif", "Finding you a partner...");
 	socket.searching = true;
-	var able = local_join(socket, config.threshhold);
-	if (able) {
-		var room = socket.room;
-		var partner = users[socket.pid]
-		socket.searching = false;
-		partner.searching = false;
-		socket.paired = true;
-		partner.paired = true;
-		socket.emit('match', partner.user, room);
-		partner.emit('match', socket.user, room);
-		return true;
-	}
-	return false;
-}
+	tryJoin(socket, config.threshhold);
+};
 
+function leave(socket, partner) {	
+	if(partner && socket.room == partner.room) {
+		setUp(partner);
+		partner.emit("solo", false);
+	}
+	setUp(socket);
+	socket.emit("solo", true);
+};
+
+function sendMessage(socket, message) {
+	var p = getPartner(socket.paired, socket.pid);
+	if(p) {
+		p.emit("updatechat", false, message);
+	}
+	socket.emit("updatechat", true, message);
+};
+
+// local functions
 function removeFeed(socket, partner, type) {
-    partner.emit('remove', {
+    partner.emit("remove", {
         id: socket.id,
         type: type
     });
-}
+};
 
-var leave = function (socket) {	
-	if(isConnected(socket)) {
-		var partner = users[socket.pid];
-		socket.leave(socket.room);
-		partner.leave(partner.room);
-		delete partner.pid;
-		delete partner.room;
-		partner.paired = false;
-		removeFeed(socket, partner);
-		removeFeed(partner, socket);
-		partner.emit('solo', false);
+function setUp (sock, part, room) {
+	sock.searching = false;
+	sock.paired = part ? true : false;
+	sock.pid = part && part.id || undefined;
+	sock.room = room;
+	if(room) sock.join(room);
+};
+
+function onJoin(err, socket, partner) {
+	if(err) socket.emit("notif", err);
+	else {
+		var room = rand.generateKey(config.roomKeyLen);
+		setUp(socket, partner, room);
+		setUp(partner, socket, room);
+		question.setQ(socket, partner);
+		socket.emit("match", partner.publicUser, room);
+		partner.emit("match", socket.publicUser, room);
 	}
-	delete socket.pid;
-	delete socket.room;
-	socket.paired = false;
-	socket.emit("solo", true);
-}
+};
 
-var sendMessage = function (socket, message) {
-	if(isConnected(socket)) {
-		users[socket.pid].emit('updatechat', false, message);
+function tryJoin(socket, thresh) {
+	var p = removeQ();
+	if (!socket.searching) {
+		onJoin("Leaving the queue", socket);
+	} else if ( typeof p == "undefined" || thresh < crit) {
+		queue.push(socket.id);
+		if(p) 
+			queue.push(p.id);
+		if (thresh < crit) 
+			onJoin("Finding a partner is taking longer than expected...", socket);
+		else 
+			onJoin("Waiting for people to join the queue...", socket);
+	} else if (p.searching && compare(socket, p) > thresh) {
+		onJoin(null, socket, p);
+	}	else {
+		setTimeout( function() { 
+			queue.push(p.id);
+			tryJoin(socket, thresh * config.decay);
+		}, config.delay);
 	}
-	socket.emit('updatechat', true, message);
-}
+};
 
-
-// local functions
-var local_join = function (socket, thresh) {
-	if(queue.length == 0 || thresh < crit) {
-		if(thresh < crit)
-			socket.emit('notif', "Finding a partner is taking longer than expected...");
-		if(socket.room === undefined) {
-			queue.searching = true;
-			queue.push(socket.id);
-		} else
-			socket.emit('notif', 'Some error occured! Please refresh your page to find a partner');
-	} else {
-		var part_id = queue.pop();
-		if (part_id !== socket.id) {
-			var partner = users[part_id];
-			if (!partner.searching) {
-				return local_join(socket, thresh * config.decay);
-			} else if(compare(partner, socket) < thresh) {
-				queue.push(part_id);
-				return local_join(socket, thresh * config.decay);
-			} else {
-				var room = rand.generateKey(10);
-				partner.room = room;
-				socket.room = room;
-				partner.pid = socket.id;
-				socket.pid = partner.id;
-				partner.join(room);
-				socket.join(room);
-				return true;
-			}
-		} return local_join(socket, thresh * config.decay);
-	}
-	return false;
-}
-
-var compare = function (partner, self) {
-	return 1.0;
-}
+var compare = function (self, partner) {
+	if(partner.id == self.id) return 0.0;
+	if(self.loggedIn && partner.loggedIn)
+		return 1.0;
+	return 0.75;
+};
 
 
 module.exports.join = join;

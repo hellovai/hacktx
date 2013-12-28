@@ -1,128 +1,115 @@
 var globals = require('./globals')
 	, db = require('./db')
 	, config = require('./config').question
-	, sets = require('simplesets');
+	, set = require('simplesets');
 
-var isConnected = globals.isConnected;
-var queue = globals.queue;
-var users = globals.users;
+var queue = globals.queue
+  , users = globals.users
+  , isConnected = globals.isConnected
+  , getPartner = globals.getPartner
+  , safeCb = globals.safeCallback
+  , removeQ = globals.removeQ;
+
 var crit = Math.pow(config.decay, config.critical) * config.threshhold;
 
 // sets question for user
 // if partner has a question, given preference
 // else we take youre question
 // else we give random
-var set = function (socket) {
-	reRun(socket, config.threshhold, true, Math.random());
+function setQ(socket, partner, rand) {
+	var bf = bestFit(rand || false, socket, partner);
+	if( bf ) {
+		findInDb(bf, socket, partner);
+	} else {
+		findInDb([], socket, partner);
+	}
 }
 
-// gets new question for both
-// disregards any current question info
-var getNew = function (socket) {
-	reRun(socket, config.threshhold, true, Math.random());
+// gets new question for single
+// must be completely or else will get 
+function getNew(socket) {
+	var bf = bestFit(true, socket);
+	if( bf ) {
+		findInDb(bf, socket);
+	} else {
+		findInDb([], socket);
+	}
 }
 
-module.exports.setQ = set;
+module.exports.setQ = setQ;
 module.exports.getNew = getNew;
 
-// grabs random question from the db
-function getRandQuestionGTE(socket, threshold, trigger, rand) {
-	db.questions.findOne( { random : { $gte : rand } }, function(err, res) {
-		if(threshold < crit) {
-			db.questions.findOne(function (err, res) {
-				if(err || !res) console.log('WTF HAPPENED!');
-				else sendQ(socket, res);
+// grabs a specific question from the db
+function findInDb(qId, socket, partner) {
+	if(typeof qId == "string") {
+		db.questions.findOne( { folder : qId }, function (err, res) {
+			if(res) {
+				sendQ(socket, res, partner);
+			} else {
+				findInDb([], socket, partner);
+			}
+		});
+	} else {
+		if (Math.random() <= 0.5)
+			db.questions.findOne( { folder : {$nin: qId}
+				, random : { $gte : Math.random() } }
+				, function (err, res) {
+				if(res) {
+					sendQ(socket, res, partner);
+				} else {
+					findInDb([], socket, partner);
+				}
 			});
-		} else if(err || !res) {
-			reRun(socket, threshold, trigger, rand);
-		} else if(noOverlap(socket, res)) {
-			sendQ(socket, res)
-		} else {
-			reRun(socket, threshold, trigger, rand);
-		}
-	});
-}
-function getRandQuestionLTE(socket, threshold, trigger, rand) {
-	db.questions.findOne( { random : { $lte : rand } }, function(err, res) {
-		if(err || !res) {
-			reRun(socket, threshold, trigger, rand);
-		} else if(noOverlap(socket, res)) {
-			sendQ(socket, res)
-		} else {
-			reRun(socket, threshold, trigger, rand);
-		}
-	});
-}
-
-
-function reRun (socket, threshold, trigger, rand) {
-	if (trigger == false) {
-		trigger = true;
-		rand = Math.random();
-	} else trigger = false;
-	console.log(threshold);
-	if(trigger)
-		getRandQuestionGTE(socket, threshold * config.decay, trigger, rand)
-	else
-		getRandQuestionLTE(socket, threshold * config.decay, trigger, rand)
-}
-
-function noOverlap(socket, q) {
-	if(socket.question === undefined)
-		return true
-	if(q.folder != socket.question) {
-		if(!isConnected(socket))
-			return true
-		var partner = users[socket.pid];
-		if(partner.question === undefined)
-			return true
-		if(partner.question != q.folder)
-			return true
+		else
+			db.questions.findOne( { folder : {$nin: qId}
+				, random : { $lte : Math.random() } }
+				, function (err, res) {
+				if(res) {
+					sendQ(socket, res, partner);
+				} else {
+					findInDb([], socket, partner);
+				}
+			});
 	}
-	return false
-}
+};
 
 //grabs list of best possible questions for user
-function bestFit(socket) {
-	return undefined;
-	var sock_seen = set.Set([]);
-	var sock_fin = set.Set([]);
-	var part_seen = set.Set([]);
-	var part_fin = set.Set([]);
+function bestFit(rand, socket, partner) {
+	var sockSeen = new set.Set([]);
+	var sockFin = new set.Set([]);
+	var partSeen = new set.Set([]);
+	var partFin = new set.Set([]);
 	if(socket.loggedIn) {
-		sock_seen.union( set.Set(socket.userData.questions.viewed) );
-		sock_fin.union( set.Set(socket.userData.questions.finished) );
+		sockSeen.union( new set.Set(socket.user.db.questions.viewed) );
+		sockFin.union( new set.Set(socket.user.db.questions.finished) );
 	}
-	if(isConnected(socket))
-		if(users[socket.pid].loggedIn) {
-			var partner = users[socket.pid];
-			part_seen.union( set.Set(partner.userData.questions.viewed) );
-			part_fin.union( set.Set(partner.userData.questions.finished) );
-		}
-	var finshed = sock_fin.union(part_fin);
-	var left = sock_seen.difference(finshed);
-	var left2 = part_seen.difference(finshed);
-	var overlap = left.intersection(left2).array();
-	if(overlap.length > 0)
-		return overlap[0];
-	var both = left.union(left2).array();
-	if(both.length > 0)
-		return both[0];
-	// otherwise find something thats not in finished list
-	return undefined;
-}
-
-//grabs a question by folder name
-function getByFolder(name) {
-	return db.questions.findOne( { folder : name } );
-}
+	if(partner && partner.loggedIn) {
+		partSeen.union( new set.Set(partner.user.db.questions.viewed) );
+		partFin.union( new set.Set(partner.user.db.questions.finished) );
+	}
+	var fin = sockFin.union(partFin);
+	var sSeen = sockSeen.difference(fin);
+	var pSeen = partSeen.difference(fin);
+	
+	var bSeen = pSeen.intersection(sSeen).array();
+	if(!rand && bSeen.length > 0)
+		return bSeen[ Math.floor( Math.random() * bSeen.length ) ];
+	
+	var oSeen = pSeen.union(sSeen).array();
+	if(!rand && oSeen.length > 0)
+		return oSeen[ Math.floor( Math.random() * oSeen.length ) ];
+	
+	return fin.union(pSeen).union(sSeen).array();
+};
 
 //sends socket and partner new question
-function sendQ(socket, q) {
+function sendQ(socket, q, p) {
+	if(p) sendQ(p, q);
 	socket.question = q.folder;
-	if(isConnected(socket)) {
-		users[socket.pid].question = q.folder;
-		users[socket.pid].emit('newQuestion', q.title, q.details);
-	}
 	socket.emit('newQuestion', q.title, q.details);
-}
+	if(socket.loggedIn) {
+		var i = socket.user.db.questions.viewed.indexOf(q.folder);
+		if( i == -1)
+			socket.user.db.questions.viewed.push(q.folder);
+	}
+};
