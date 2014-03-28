@@ -32,13 +32,18 @@
 			</div>
 			<div class="plugins">
 				<div id="question-box">
-					<h1></h1>
+					<h3></h3>
 					<p></p>
 				</div>
 				<div class="toggles">
 					<div id="video-box">
 						<video id="self-video" class="vids"></video>
-						<div id="remotes">
+						<div id="remCover">
+							<div id="loader">
+								<img src="img/loading.gif">
+							</div>
+							<div id="remotes">
+							</div>
 						</div>
 					</div>
 					<div class="code-box" id="self-code-box">
@@ -124,7 +129,6 @@
 	<script src="js/signaling-base.js"></script> 
 
 	<script src="js/signaling.js"></script> 
-	<script src="js/socket-client.js"></script>
 	<script type="text/javascript" src="js/plugins.js"></script>
 	<script type="text/javascript" src="js/custom.js"></script>
 	<script src="js/signaling-base.js"></script> 
@@ -136,7 +140,7 @@
 		$(window).ready(updateHeight);
 		$(window).resize(updateHeight);
 		createMenu();
-		$('#tutorial').tooltip();
+		$("#tutorial").tooltip();
 		selfEdit = CodeMirror.fromTextArea(document.getElementById("self-code"), {
 			mode: {name: "python",
 			version: 2},
@@ -146,7 +150,7 @@
 			matchBrackets: true,
 			onKeyEvent: function (editor, e) {
 			  if(e.type == "keyup") {
-			    socket.emit('change', editor.doc.getValue());
+			    socket.emit("change", editor.doc.getValue());
 			  }
 			},
 		});
@@ -160,7 +164,7 @@
 		});
 		selfEdit.setSize("100%", "100%");
 		remoteEdit.setSize("100%", "100%");
-		write_question('The question appears here!', 'To get started simply log in with your github and learn some latin. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
+		write_question("The question appears here!", "To get started simply log in with your github and learn some latin. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
 	});
 	</script>
 </body>

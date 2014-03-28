@@ -1,0 +1,8 @@
+{
+    "details": "<p>The <b>Golomb's self-describing sequence</b> {G(<var>n</var>)} is the only nondecreasing sequence of natural numbers such that <var>n</var> appears exactly G(<var>n</var>) times in the sequence. The values of G(<var>n</var>) for the first few <var>n</var> are</p><p><div align=\"center\"><table align=\"center\" border=\"0\" cellpadding=\"5\" cellspacing=\"1\"><tr><td align=\"left\"><var>n</var></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>\u2026</td></tr><tr><td>G(<var>n</var>)</td><td>1</td><td>2</td><td>2</td><td>3</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td><td>6</td><td>6</td><td>6</td><td>6</td><td>\u2026</td></tr></table></div></p><p>You are given that G(10<sup>3</sup>) = 86, G(10<sup>6</sup>) = 6137.<br/>You are also given that \u03a3G(<var>n</var><sup>3</sup>) = 153506976 for 1 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>n</var> <img alt=\"&lt;\" border=\"0\" height=\"10\" src=\"images/symbol_lt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> 10<sup>3</sup>.</p><p>Find \u03a3G(<var>n</var><sup>3</sup>) for 1 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>n</var> <img alt=\"&lt;\" border=\"0\" height=\"10\" src=\"images/symbol_lt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> 10<sup>6</sup>.</p>",
+    "folder": "golombs-self-describing-sequen",
+    "level": 1,
+    "random": 0.8443590750953986,
+    "tags": [],
+    "title": "Golomb's self-describing sequence"
+}

@@ -1,0 +1,8 @@
+{
+    "details": "<p>If we calculate <var>a</var><sup>2</sup> mod 6 for 0 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>a</var> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> 5 we get: 0,1,4,3,4,1.</p><p>The largest value of <var>a</var> such that <var>a</var><sup>2</sup> <img alt=\"\u2261\" border=\"0\" height=\"11\" src=\"images/symbol_cong.gif\" style=\"vertical-align:middle;\" width=\"9\"/> <var>a</var> mod 6 is 4.<br/>Let's call M(<var>n</var>) the largest value of <var>a</var> <img alt=\"&lt;\" border=\"0\" height=\"10\" src=\"images/symbol_lt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>n</var> such that <var>a</var><sup>2</sup> <img alt=\"\u2261\" border=\"0\" height=\"11\" src=\"images/symbol_cong.gif\" style=\"vertical-align:middle;\" width=\"9\"/> <var>a</var> (mod <var>n</var>).<br/>So M(6) = 4.</p><p>Find <img alt=\"\u2211\" border=\"0\" height=\"14\" src=\"images/symbol_sum.gif\" style=\"vertical-align:middle;\" width=\"11\"/>M(<var>n</var>) for 1 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>n</var> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> 10<sup>7</sup>.</p>",
+    "folder": "idempotents",
+    "level": 1,
+    "random": 0.40670606059492553,
+    "tags": [],
+    "title": "Idempotents"
+}

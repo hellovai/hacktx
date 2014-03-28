@@ -1,0 +1,8 @@
+{
+    "details": "<p>Consider the isosceles triangle with base length, <i>b</i> = 16, and legs, L = 17.</p><div style=\"text-align:center;\"><img alt=\"\" height=\"228\" src=\"project/images/p_138.gif\" width=\"230\"/></div><p>By using the Pythagorean theorem it can be seen that the height of the triangle, <i>h</i> = <img alt=\"\u221a\" border=\"0\" height=\"16\" src=\"images/symbol_radic.gif\" style=\"vertical-align:middle;\" width=\"14\"/>(17<sup>2</sup> <img alt=\"\u2212\" border=\"0\" height=\"3\" src=\"images/symbol_minus.gif\" style=\"vertical-align:middle;\" width=\"9\"/> 8<sup>2</sup>) = 15, which is one less than the base length.</p><p>With <i>b</i> = 272 and L = 305, we get <i>h</i> = 273, which is one more than the base length, and this is the second smallest isosceles triangle with the property that <i>h</i> = <i>b</i> <img alt=\"\u00b1\" border=\"0\" height=\"11\" src=\"images/symbol_plusmn.gif\" style=\"vertical-align:middle;\" width=\"11\"/> 1.</p><p>Find <img alt=\"\u2211\" border=\"0\" height=\"14\" src=\"images/symbol_sum.gif\" style=\"vertical-align:middle;\" width=\"11\"/> L for the twelve smallest isosceles triangles for which <i>h</i> = <i>b</i> <img alt=\"\u00b1\" border=\"0\" height=\"11\" src=\"images/symbol_plusmn.gif\" style=\"vertical-align:middle;\" width=\"11\"/> 1 and <i>b</i>, L are positive integers.</p>",
+    "folder": "special-isosceles-triangles",
+    "level": 1,
+    "random": 0.19580139281478992,
+    "tags": [],
+    "title": "Special isosceles triangles"
+}

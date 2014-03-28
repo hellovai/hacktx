@@ -1,0 +1,8 @@
+{
+    "details": "<p>It was proposed by Christian Goldbach that every odd composite number can be written as the sum of a prime and twice a square.</p><p style=\"margin-left:10px;\">9 = 7 + 2<img alt=\"\u00d7\" border=\"0\" height=\"9\" src=\"images/symbol_times.gif\" style=\"vertical-align:middle;\" width=\"9\"/>1<sup>2</sup><br/>15 = 7 + 2<img alt=\"\u00d7\" border=\"0\" height=\"9\" src=\"images/symbol_times.gif\" style=\"vertical-align:middle;\" width=\"9\"/>2<sup>2</sup><br/>21 = 3 + 2<img alt=\"\u00d7\" border=\"0\" height=\"9\" src=\"images/symbol_times.gif\" style=\"vertical-align:middle;\" width=\"9\"/>3<sup>2</sup><br/>25 = 7 + 2<img alt=\"\u00d7\" border=\"0\" height=\"9\" src=\"images/symbol_times.gif\" style=\"vertical-align:middle;\" width=\"9\"/>3<sup>2</sup><br/>27 = 19 + 2<img alt=\"\u00d7\" border=\"0\" height=\"9\" src=\"images/symbol_times.gif\" style=\"vertical-align:middle;\" width=\"9\"/>2<sup>2</sup><br/>33 = 31 + 2<img alt=\"\u00d7\" border=\"0\" height=\"9\" src=\"images/symbol_times.gif\" style=\"vertical-align:middle;\" width=\"9\"/>1<sup>2</sup></p><p>It turns out that the conjecture was false.</p><p>What is the smallest odd composite that cannot be written as the sum of a prime and twice a square?</p>",
+    "folder": "goldbachs-other-conjecture",
+    "level": 1,
+    "random": 0.060774449519775064,
+    "tags": [],
+    "title": "Goldbach's other conjecture"
+}

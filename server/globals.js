@@ -1,5 +1,6 @@
 var queue = []
-	, users = {};
+	, users = {}
+	, session = {};
 
 // generic functions
 function isConnected(paired, pid) {
@@ -21,8 +22,18 @@ function removeQ(id) {
 	return users[id];
 }
 
+function safeCallback(cb) {
+    if (typeof cb === 'function') {
+        return cb;
+    } else {
+        return function () {};
+    }
+}
+
 module.exports.queue = queue;
 module.exports.users = users;
 module.exports.isConnected = isConnected;
 module.exports.getPartner = getPartner;
 module.exports.removeQ = removeQ;
+module.exports.session = session;
+module.exports.safeCallback = safeCallback;

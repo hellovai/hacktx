@@ -1,0 +1,8 @@
+{
+    "details": "<p>ABCD is a convex, integer sided quadrilateral with 1 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> AB <img alt=\"&lt;\" border=\"0\" height=\"10\" src=\"images/symbol_lt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> BC <img alt=\"&lt;\" border=\"0\" height=\"10\" src=\"images/symbol_lt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> CD <img alt=\"&lt;\" border=\"0\" height=\"10\" src=\"images/symbol_lt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> AD.<br/>BD has integer length. O is the midpoint of BD. AO has integer length.<br/>We'll call ABCD a <i>biclinic integral quadrilateral</i> if AO = CO <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> BO = DO.<br/></p><p>For example, the following quadrilateral is a biclinic integral quadrilateral:<br/>AB = 19, BC = 29, CD = 37, AD = 43, BD = 48 and AO = CO = 23.</p><div align=\"center\"><img src=\"project/images/p_311_biclinic.gif\"/></div><p>Let B(<var>N</var>) be the number of distinct biclinic integral quadrilaterals ABCD that satisfy AB<sup>2</sup>+BC<sup>2</sup>+CD<sup>2</sup>+AD<sup>2</sup> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>N</var>.<br/>We can verify that B(10 000) = 49 and B(1 000 000) = 38239.</p><p>Find B(10 000 000 000).</p>",
+    "folder": "biclinic-integral-quadrilatera",
+    "level": 1,
+    "random": 0.0849548028926187,
+    "tags": [],
+    "title": "Biclinic Integral Quadrilaterals"
+}

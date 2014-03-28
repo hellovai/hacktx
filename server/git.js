@@ -1,47 +1,99 @@
-var github = require('octonode')
-	, qs = require('querystring')
-  , cookie = require('cookie')
-	, config = require('./config').github
-  , globals = require('./globals')
-  , db = require('./db');
+var github = require("octonode")
+	, qs = require("querystring")
+  , cookie = require("cookie")
+	, cfg = require("./config")
+  , globals = require("./globals")
+  , db = require("./db")
+  , config = cfg.github;
 
-var isConnected = globals.isConnected;
-var queue = globals.queue;
-var users = globals.users;
+var queue = globals.queue
+  , users = globals.users
+  , isConnected = globals.isConnected
+  , getPartner = globals.getPartner
+  , safeCb = globals.safeCallback
+  , removeQ = globals.removeQ;
 
 var auth_url = github.auth.config({
   id: config.id,
   secret: config.secret
-}).login(['user', 'repo']);
+}).login(["user", "repo"]);
 
-var state = auth_url.match(/&state=([0-9a-z]{32})/i);
+function login (socket) {
+  var token = socket.token;
+  if(token) {
+    socket.user.ghClient = getClient(token);
+    socket.user.ghMe = socket.user.ghClient.me();
+    touchAccount(socket);
+  }
+};
 
-function accessAccount (socket) {
-  socket.github.info(function (err, data, headers) {
-    if(!err) {
-      accessDB(socket, data);
-      socket.gRepo = socket.gClient.repo(data.login + '/' + config.repo);
-      socket.gRepo.info(function (err, data, header) {
-        if(err) createRepo(socket);
-      })
-    } else {
-      if(err.statusCode == 401){
-        socket.token = null;
-        delete socket.handshake.cookie['gitLogin'];
-      }
+function logout (socket, clbk) {
+  socket.token = null;
+  socket.user = {};
+  socket.publicUser = cfg.defaultUser;
+  socket.loggedIn = false;
+  if(!clbk) {
+    socket.emit("logout");
+    var p = getPartner(socket);
+    if(p) p.emit("rLogin", socket.publicUser);
+  } else {
+    clbk();
+  }
+}
+
+function save (socket, code) {
+  socket.isSaving = true;
+  var q = socket.question;
+  var rep = socket.user.ghRepo;
+  rep.contents(q + "/code.py", function (err, data, headers) {
+    if(err) {
+      console.log("ERRR: ", err);
+      return rep.createContents(q + "/README.md", "Creating " + q, new Buffer(code).toString("base64"), function (e, d, h) {
+        if(e) {
+          socket.isSaving = false;
+          return console.log("ERR: ", e);
+        }
+        rep.createContents(q + "/code.py", "Creating " + q, code, function (e2, d2, h2) {
+          socket.isSaving = false;
+          if(e2) return console.log("ERR: ", e2);
+          socket.emit("notif", "Created " + q + " directory!");
+        });
+      });
     }
+    rep.updateContents(q + "/code.py", "Updating " + q, code, data["sha"], function(e, d, h) {
+      socket.isSaving = false;
+      if(e) return console.log(e);
+      socket.emit("notif", "Updated " + q + " directory!");
+    });
   });
 }
 
-function accessDB (socket, data) {
-  db.users.findOne({"github.id":data.id}, function (err, res) {
-    if(err)
-      console.log("Could not find: ", data.id, err);
-    else if (!res)
-      addToDB(socket,data);
-    else {
-      logSocketIn(socket, res);
-    }
+function load (socket) {
+  socket.isSaving = true;
+  var q = socket.question;
+  var rep = socket.user.ghRepo;
+  rep.contents(q + "/code.py", function (err, data, headers) {
+    socket.isSaving = false;
+    if(err) { return; }
+    socket.emit("setCode", new Buffer(data["content"], 'base64').toString());
+  });
+}
+
+// private functions
+function createRepo(socket) {
+  socket.user.ghMe.fork(config.user + "/" + config.repo, function(err, data, headers){
+    if(err || !data) {
+      return logout(socket, function() { socket.emit("notif", "Try logging in again again!"); });
+    socket.emit("notif", "You have forked " + config.questionRepo);
+    };
+  });
+}
+
+function touchRepo (socket, data) {
+  logSocketIn(socket, data);
+  socket.user.ghRepo = socket.user.ghClient.repo(data.github.username + "/" + config.repo);
+  socket.user.ghRepo.info(function(err, res) {
+    if(err) return createRepo(socket);
   });
 }
 
@@ -60,78 +112,52 @@ function addToDB (socket, data) {
     ,"flairs":[]
   };
   db.users.insert(newUser, {safe:true}, function (err, doc) {
-    if(err || !doc) {
-      socket.emit('notif', 'Try logging in again again!');
-    } else {
-      logSocketIn(socket, doc[0]);
-    }
+    if(err || !doc)
+      return logout(socket, function() { socket.emit("notif", "Try logging in again again!"); });
+    socket.user.db = doc;
+    touchRepo(socket, newUser);
   });
 }
 
-function createRepo(socket) {
-  socket.github.fork(config.user + '/' + config.repo, function(err, data, headers){
-    if(err || !data) {
-      console.log(err);
-    } else {
-      socket.emit('notif', "You have forked " + config.questionRepo);
-    }
+function touchDB(socket, data) {
+  db.users.findOne({"github.username":data.login}, function (err, res) {
+    if(err || !res) return addToDB(socket, data);
+    socket.user.db = res;
+    touchRepo(socket, res);
   });
 }
 
-function logSocketIn (socket, data) {
-  socket.user = {
-    "nick":data.github.username
-    ,"avatar_url":data.github.avatar
-    ,"points":data.points
-  };
-  socket.dbItem = data;
-  socket.emit('login', socket.user);
-  if(isConnected(socket))
-    users[socket.pid].emit('rLogin', socket.user);
-}
-
-function login (data, req, res) {
-	var values = qs.parse(data);
-  // Check against CSRF attacks
-  res.setHeader('Content-Type', 'text/html');
-  if (!state || state[1] != values.state) {
-    res.statusCode = 403;
-    var ck = cookie.serialize('gitLogin', "goodtry", { 
-      expires: new Date(Date.now() + 900000)
-      ,maxAge: 900000
-      ,httpOnly: true 
-      ,signed: true
-      // ,secure: true
-      ,path:'/'
-      ,domain: '.mealmaniac.com'
-    });
-    res.setHeader('Set-Cookie', ck);
-    res.end("<body onLoad=\"window.open('', '_self', '');setTimeout(function() {window.close();}, 100);\"></body>");
-  } else {
-    github.auth.login(values.code, function (err, token) {
-      var ck = cookie.serialize('gitLogin', token, { 
-        expires: new Date(Date.now() + 900000)
-        ,maxAge: 900000
-        ,httpOnly: true 
-        // ,secure: true
-        ,signed: true
-        ,path:'/'
-        ,domain: '.mealmaniac.com'
-      });
-      res.statusCode = 200;
-      res.setHeader('Set-Cookie', ck);
-      // res.cookie('gitLogin', token, {secure: true, httpOnly: true, signed: true, expires: new Date(Date.now() + 900000)});
-      res.end("<body onLoad=\"window.open('', '_self', '');setTimeout(function() {window.close();}, 100);\">Logged In!</body>");
-    });
-  }
+function touchAccount(socket) {
+  socket.user.ghMe.info(function (err, d, h) {
+    if(err)
+      return logout(socket, function() { socket.emit('notif', "Your credentials were not valid!") });
+    touchDB(socket, d);
+  })
 }
 
 function getClient (token) {
   return github.client(token);
 }
 
+function logSocketIn (socket, data) {
+  socket.publicUser = {
+    "nick":data.github.username
+    ,"avatar_url":data.github.avatar
+    ,"points":data.points
+  };
+  socket.loggedIn = true;
+  socket.user.db = data;
+  socket.emit("login", socket.publicUser);
+  var p = getPartner(socket)
+  if(p) p.emit("rLogin", socket.publicUser);
+}
+
+
 module.exports.api = github;
 module.exports.login = login;
+module.exports.logout = logout;
+module.exports.save = save;
+module.exports.load = load;
 module.exports.auth_url = auth_url;
-module.exports.getClient = getClient;
-module.exports.accessAccount = accessAccount;
+// module.exports.getClient = getClient;
+// module.exports.accessAccount = accessAccount;

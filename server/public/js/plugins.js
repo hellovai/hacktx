@@ -16,7 +16,7 @@ function write_message (me, message) {
 }
 
 function write_question (title, data) {
-	$('#question-box').find("h1").html(title);
+	$('#question-box').find("h3").html(title);
 	$('#question-box').find("p").html(data);
 	resetBox("self");
 	resetBox("remote");

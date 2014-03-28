@@ -70,14 +70,16 @@
             resetBox("remote");
             notify(2);
           }), n.on("match", function (u, room) {
+            $("#loader").show();
             $("#conversation").html('');
             write_alert("Now connected to " + u.nick);
             setRemote(u);
-            joinWebRTC(room, 10);
             notify(1);
+          }), n.on("findRoom", function () {
+            joinWebRTC(null, 10);
           }), n.on("updateChat", function (me, message) {
             write_message(me, message);
-            if(!me) notif(1);
+            if(!me) notify(1);
           }), n.on("changeQuestion", function () {
             write_alert("Your partner is requesting a new question!");
             $("#toggleQuestion").addClass("glow");
@@ -98,11 +100,13 @@
             write_alert(msg);
           }), n.on("logout", function () {
             setSelf();
+          }), n.on("setCode", function (u) {
+            selfEdit.setValue(u);
           }), n.on("login", function (u) {
             setSelf(u);
           }), n.on("rLogin", function (u) {
-              write_alert(remoteName + " is now known as " + u.nick);
-              setRemote(u);
+            write_alert(remoteName + " is now known as " + u.nick);
+            setRemote(u);
           }), e.logger = this.logger, e.debug = !1, this.webrtc = new o(e), ["mute", "unmute", "pause", "resume"].forEach(function (e) {
             s[e] = s.webrtc[e].bind(s.webrtc)
           }), this.webrtc.on("*", function () {
@@ -128,10 +132,12 @@
             value: n
           }
         }), n.prototype.leaveRoom = function () {
-          this.roomName && (this.connection.emit("leave", this.roomName), this.webrtc.peers.forEach(function (e) {
+          this.isConnect && (this.connection.emit("leave"), this.webrtc.peers.forEach(function (e) {
             e.end()
-          }), this.getLocalScreen() && this.stopScreenShare(), this.emit("leftRoom", this.roomName))
+          }), this.getLocalScreen() && this.stopScreenShare(), this.emit("leftRoom"));
+          this.isConnect = !1;
         }, n.prototype.handlePeerStreamAdded = function (e) {
+          $("#loader").hide();
           var t = this.getRemoteVideoContainer(),
           n = s(e.stream);
           t.innerHTML = '' ;
@@ -150,9 +156,10 @@
           this.webrtc.peers.forEach(function (t) {
             t.videoEl && (t.videoEl.volume = e)
           })
-        }, n.prototype.joinRoom = function (e, t) {
+        }, n.prototype.joinRoom = function (t) {
           var n = this;
-          this.roomName = e, this.connection.emit("join", e, function (o, i) {
+          this.isConnect = !0;
+          this.connection.emit("join", function (o, i) {
             if (o) n.emit("error", o);
             else {
               var r, s, a, c;
@@ -230,13 +237,15 @@
         }, n.prototype.saveCode = function (cd) {
           this.connection.emit("save", cd);
         }, n.prototype.chat = function (m) {
-          if(m.len > 0) this.connection.emit("chat", m);
+          if(m.length > 0) this.connection.emit("chat", m);
         }, n.prototype.acctInfo = function () {
           this.connection.emit("userInfo");
         }, n.prototype.login = function () {
           this.connection.emit("login");
         }, n.prototype.logout = function () {
           this.connection.emit("logout");
+        }, n.prototype.delayed = function () {
+          this.connection.emit("reconnect");
         }, t.exports = n
       }, {
         attachmediastream: 5,
@@ -1254,818 +1263,823 @@ function r() {
             }()), V.wk && function () {
               return F ? void 0 : /loaded|complete/.test(P.readyState) ? (e(), void 0) : (setTimeout(arguments.callee, 0), void 0)
             }(), n(e)))
-}(),
-function () {
-  V.ie && V.win && window.attachEvent("onunload", function () {
-    for (var e = B.length, t = 0; e > t; t++) B[t][0].detachEvent(B[t][1], B[t][2]);
-      for (var n = X.length, o = 0; n > o; o++) d(X[o]);
-        for (var i in V) V[i] = null;
-          V = null;
-        for (var r in swfobject) swfobject[r] = null;
-          swfobject = null
-      })
-}(), {
-  registerObject: function (e, t, n, o) {
-    if (V.w3 && e && t) {
-      var i = {};
-      i.id = e, i.swfVersion = t, i.expressInstall = n, i.callbackFn = o, M[M.length] = i, k(e, !1)
-    } else o && o({
-      success: !1,
-      id: e
-    })
-  },
-  getObjectById: function (e) {
-    return V.w3 ? s(e) : void 0
-  },
-  embedSWF: function (e, n, o, i, r, s, p, u, l, d) {
-    var f = {
-      success: !1,
-      id: n
-    };
-    V.w3 && !(V.wk && V.wk < 312) && e && n && o && i && r ? (k(n, !1), t(function () {
-      o += "", i += "";
-      var t = {};
-      if (l && typeof l === A)
-        for (var m in l) t[m] = l[m];
-          t.data = e, t.width = o, t.height = i;
-        var y = {};
-        if (u && typeof u === A)
-          for (var g in u) y[g] = u[g];
-            if (p && typeof p === A)
-              for (var b in p) typeof y.flashvars != O ? y.flashvars += "&" + b + "=" + p[b] : y.flashvars = b + "=" + p[b];
-                if (v(r)) {
-                  var w = h(t, y, n);
-                  t.id == n && k(n, !0), f.success = !0, f.ref = w
-                } else {
-                  if (s && a()) return t.data = s, c(t, y, n, d), void 0;
-                  k(n, !0)
-                }
-                d && d(f)
-              })) : d && d(f)
-  },
-  switchOffAutoHideShow: function () {
-    U = !1
-  },
-  ua: V,
-  getFlashPlayerVersion: function () {
-    return {
-      major: V.pv[0],
-      minor: V.pv[1],
-      release: V.pv[2]
-    }
-  },
-  hasFlashPlayerVersion: v,
-  createSWF: function (e, t, n) {
-    return V.w3 ? h(e, t, n) : void 0
-  },
-  showExpressInstall: function (e, t, n, o) {
-    V.w3 && a() && c(e, t, n, o)
-  },
-  removeSWF: function (e) {
-    V.w3 && d(e)
-  },
-  createCSS: function (e, t, n, o) {
-    V.w3 && b(e, t, n, o)
-  },
-  addDomLoadEvent: t,
-  addLoadEvent: n,
-  getQueryParamValue: function (e) {
-    var t = P.location.search || P.location.hash;
-    if (t) {
-      if (/\?/.test(t) && (t = t.split("?")[1]), null == e) return w(t);
-      for (var n = t.split("&"), o = 0; o < n.length; o++)
-        if (n[o].substring(0, n[o].indexOf("=")) == e) return w(n[o].substring(n[o].indexOf("=") + 1))
-      }
-    return ""
-  },
-  expressInstallCallback: function () {
-    if (H) {
-      var e = m(N);
-      e && S && (e.parentNode.replaceChild(S, e), T && (k(T, !0), V.ie && V.win && (S.style.display = "block")), C && C(E)), H = !1
-    }
-  }
-}
-}();
-! function () {
-  if ("undefined" != typeof window && !window.WebSocket) {
-    var e = window.console;
-    if (e && e.log && e.error || (e = {
-      log: function () {},
-      error: function () {}
-    }), !swfobject.hasFlashPlayerVersion("10.0.0")) return e.error("Flash Player >= 10.0.0 is required."), void 0;
-      "file:" == location.protocol && e.error("WARNING: web-socket-js doesn't work in file:///... URL unless you set Flash Security Settings properly. Open the page via Web server i.e. http://..."), WebSocket = function (e, t, n, o, i) {
-        var r = this;
-        r.__id = WebSocket.__nextId++, WebSocket.__instances[r.__id] = r, r.readyState = WebSocket.CONNECTING, r.bufferedAmount = 0, r.__events = {}, t ? "string" == typeof t && (t = [t]) : t = [], setTimeout(function () {
-          WebSocket.__addTask(function () {
-            WebSocket.__flash.create(r.__id, e, t, n || null, o || 0, i || null)
-          })
-        }, 0)
-      }, WebSocket.prototype.send = function (e) {
-        if (this.readyState == WebSocket.CONNECTING) throw "INVALID_STATE_ERR: Web Socket connection has not been established";
-        var t = WebSocket.__flash.send(this.__id, encodeURIComponent(e));
-        return 0 > t ? !0 : (this.bufferedAmount += t, !1)
-      }, WebSocket.prototype.close = function () {
-        this.readyState != WebSocket.CLOSED && this.readyState != WebSocket.CLOSING && (this.readyState = WebSocket.CLOSING, WebSocket.__flash.close(this.__id))
-      }, WebSocket.prototype.addEventListener = function (e, t) {
-        e in this.__events || (this.__events[e] = []), this.__events[e].push(t)
-      }, WebSocket.prototype.removeEventListener = function (e, t) {
-        if (e in this.__events)
-          for (var n = this.__events[e], o = n.length - 1; o >= 0; --o)
-            if (n[o] === t) {
-              n.splice(o, 1);
-              break
-            }
-          }, WebSocket.prototype.dispatchEvent = function (e) {
-            for (var t = this.__events[e.type] || [], n = 0; n < t.length; ++n) t[n](e);
-              var o = this["on" + e.type];
-            o && o(e)
-          }, WebSocket.prototype.__handleEvent = function (e) {
-            "readyState" in e && (this.readyState = e.readyState), "protocol" in e && (this.protocol = e.protocol);
-            var t;
-            if ("open" == e.type || "error" == e.type) t = this.__createSimpleEvent(e.type);
-            else if ("close" == e.type) t = this.__createSimpleEvent("close");
-            else {
-              if ("message" != e.type) throw "unknown event type: " + e.type;
-              var n = decodeURIComponent(e.message);
-              t = this.__createMessageEvent("message", n)
-            }
-            this.dispatchEvent(t)
-          }, WebSocket.prototype.__createSimpleEvent = function (e) {
-            if (document.createEvent && window.Event) {
-              var t = document.createEvent("Event");
-              return t.initEvent(e, !1, !1), t
-            }
-            return {
-              type: e,
-              bubbles: !1,
-              cancelable: !1
-            }
-          }, WebSocket.prototype.__createMessageEvent = function (e, t) {
-            if (document.createEvent && window.MessageEvent && !window.opera) {
-              var n = document.createEvent("MessageEvent");
-              return n.initMessageEvent("message", !1, !1, t, null, null, window, null), n
-            }
-            return {
-              type: e,
-              data: t,
-              bubbles: !1,
-              cancelable: !1
-            }
-          }, WebSocket.CONNECTING = 0, WebSocket.OPEN = 1, WebSocket.CLOSING = 2, WebSocket.CLOSED = 3, WebSocket.__flash = null, WebSocket.__instances = {}, WebSocket.__tasks = [], WebSocket.__nextId = 0, WebSocket.loadFlashPolicyFile = function (e) {
-            WebSocket.__addTask(function () {
-              WebSocket.__flash.loadManualPolicyFile(e)
-            })
-          }, WebSocket.__initialize = function () {
-            if (!WebSocket.__flash) {
-              if (WebSocket.__swfLocation && (window.WEB_SOCKET_SWF_LOCATION = WebSocket.__swfLocation), !window.WEB_SOCKET_SWF_LOCATION) return e.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf"), void 0;
-              var t = document.createElement("div");
-              t.id = "webSocketContainer", t.style.position = "absolute", WebSocket.__isFlashLite() ? (t.style.left = "0px", t.style.top = "0px") : (t.style.left = "-100px", t.style.top = "-100px");
-              var n = document.createElement("div");
-              n.id = "webSocketFlash", t.appendChild(n), document.body.appendChild(t), swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION, "webSocketFlash", "1", "1", "10.0.0", null, null, {
-                hasPriority: !0,
-                swliveconnect: !0,
-                allowScriptAccess: "always"
-              }, null, function (t) {
-                t.success || e.error("[WebSocket] swfobject.embedSWF failed")
+          }(),
+          function () {
+            V.ie && V.win && window.attachEvent("onunload", function () {
+              for (var e = B.length, t = 0; e > t; t++) B[t][0].detachEvent(B[t][1], B[t][2]);
+                for (var n = X.length, o = 0; n > o; o++) d(X[o]);
+                  for (var i in V) V[i] = null;
+                    V = null;
+                  for (var r in swfobject) swfobject[r] = null;
+                    swfobject = null
+                })
+          }(), {
+            registerObject: function (e, t, n, o) {
+              if (V.w3 && e && t) {
+                var i = {};
+                i.id = e, i.swfVersion = t, i.expressInstall = n, i.callbackFn = o, M[M.length] = i, k(e, !1)
+              } else o && o({
+                success: !1,
+                id: e
               })
-            }
-          }, WebSocket.__onFlashInitialized = function () {
-            setTimeout(function () {
-              WebSocket.__flash = document.getElementById("webSocketFlash"), WebSocket.__flash.setCallerUrl(location.href), WebSocket.__flash.setDebug( !! window.WEB_SOCKET_DEBUG);
-              for (var e = 0; e < WebSocket.__tasks.length; ++e) WebSocket.__tasks[e]();
-                WebSocket.__tasks = []
-            }, 0)
-          }, WebSocket.__onFlashEvent = function () {
-            return setTimeout(function () {
-              try {
-                for (var t = WebSocket.__flash.receiveEvents(), n = 0; n < t.length; ++n) WebSocket.__instances[t[n].webSocketId].__handleEvent(t[n])
-              } catch (o) {
-                e.error(o)
+            },
+            getObjectById: function (e) {
+              return V.w3 ? s(e) : void 0
+            },
+            embedSWF: function (e, n, o, i, r, s, p, u, l, d) {
+              var f = {
+                success: !1,
+                id: n
+              };
+              V.w3 && !(V.wk && V.wk < 312) && e && n && o && i && r ? (k(n, !1), t(function () {
+                o += "", i += "";
+                var t = {};
+                if (l && typeof l === A)
+                  for (var m in l) t[m] = l[m];
+                    t.data = e, t.width = o, t.height = i;
+                  var y = {};
+                  if (u && typeof u === A)
+                    for (var g in u) y[g] = u[g];
+                      if (p && typeof p === A)
+                        for (var b in p) typeof y.flashvars != O ? y.flashvars += "&" + b + "=" + p[b] : y.flashvars = b + "=" + p[b];
+                          if (v(r)) {
+                            var w = h(t, y, n);
+                            t.id == n && k(n, !0), f.success = !0, f.ref = w
+                          } else {
+                            if (s && a()) return t.data = s, c(t, y, n, d), void 0;
+                            k(n, !0)
+                          }
+                          d && d(f)
+                        })) : d && d(f)
+            },
+            switchOffAutoHideShow: function () {
+              U = !1
+            },
+            ua: V,
+            getFlashPlayerVersion: function () {
+              return {
+                major: V.pv[0],
+                minor: V.pv[1],
+                release: V.pv[2]
               }
-            }, 0), !0
-          }, WebSocket.__log = function (t) {
-            e.log(decodeURIComponent(t))
-          }, WebSocket.__error = function (t) {
-            e.error(decodeURIComponent(t))
-          }, WebSocket.__addTask = function (e) {
-            WebSocket.__flash ? e() : WebSocket.__tasks.push(e)
-          }, WebSocket.__isFlashLite = function () {
-            if (!window.navigator || !window.navigator.mimeTypes) return !1;
-            var e = window.navigator.mimeTypes["application/x-shockwave-flash"];
-            return e && e.enabledPlugin && e.enabledPlugin.filename ? e.enabledPlugin.filename.match(/flashlite/i) ? !0 : !1 : !1
-          }, window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION || (window.addEventListener ? window.addEventListener("load", function () {
-            WebSocket.__initialize()
-          }, !1) : window.attachEvent("onload", function () {
-            WebSocket.__initialize()
-          }))
-        }
-      }(),
-      function (e, t, n) {
-        function o(e) {
-          e && (t.Transport.apply(this, arguments), this.sendBuffer = [])
-        }
-
-        function i() {}
-        e.XHR = o, t.util.inherit(o, t.Transport), o.prototype.open = function () {
-          return this.socket.setBuffer(!1), this.onOpen(), this.get(), this.setCloseTimeout(), this
-        }, o.prototype.payload = function (e) {
-          for (var n = [], o = 0, i = e.length; i > o; o++) n.push(t.parser.encodePacket(e[o]));
-            this.send(t.parser.encodePayload(n))
-        }, o.prototype.send = function (e) {
-          return this.post(e), this
-        }, o.prototype.post = function (e) {
-          function t() {
-            4 == this.readyState && (this.onreadystatechange = i, r.posting = !1, 200 == this.status ? r.socket.setBuffer(!1) : r.onClose())
+            },
+            hasFlashPlayerVersion: v,
+            createSWF: function (e, t, n) {
+              return V.w3 ? h(e, t, n) : void 0
+            },
+            showExpressInstall: function (e, t, n, o) {
+              V.w3 && a() && c(e, t, n, o)
+            },
+            removeSWF: function (e) {
+              V.w3 && d(e)
+            },
+            createCSS: function (e, t, n, o) {
+              V.w3 && b(e, t, n, o)
+            },
+            addDomLoadEvent: t,
+            addLoadEvent: n,
+            getQueryParamValue: function (e) {
+              var t = P.location.search || P.location.hash;
+              if (t) {
+                if (/\?/.test(t) && (t = t.split("?")[1]), null == e) return w(t);
+                for (var n = t.split("&"), o = 0; o < n.length; o++)
+                  if (n[o].substring(0, n[o].indexOf("=")) == e) return w(n[o].substring(n[o].indexOf("=") + 1))
+                }
+              return ""
+            },
+            expressInstallCallback: function () {
+              if (H) {
+                var e = m(N);
+                e && S && (e.parentNode.replaceChild(S, e), T && (k(T, !0), V.ie && V.win && (S.style.display = "block")), C && C(E)), H = !1
+              }
+            }
           }
+        }();
+        ! function () {
+          if ("undefined" != typeof window && !window.WebSocket) {
+            var e = window.console;
+            if (e && e.log && e.error || (e = {
+              log: function () {},
+              error: function () {}
+            }), !swfobject.hasFlashPlayerVersion("10.0.0")) return e.error("Flash Player >= 10.0.0 is required."), void 0;
+              "file:" == location.protocol && e.error("WARNING: web-socket-js doesn't work in file:///... URL unless you set Flash Security Settings properly. Open the page via Web server i.e. http://..."), WebSocket = function (e, t, n, o, i) {
+                var r = this;
+                r.__id = WebSocket.__nextId++, WebSocket.__instances[r.__id] = r, r.readyState = WebSocket.CONNECTING, r.bufferedAmount = 0, r.__events = {}, t ? "string" == typeof t && (t = [t]) : t = [], setTimeout(function () {
+                  WebSocket.__addTask(function () {
+                    WebSocket.__flash.create(r.__id, e, t, n || null, o || 0, i || null)
+                  })
+                }, 0)
+              }, WebSocket.prototype.send = function (e) {
+                if (this.readyState == WebSocket.CONNECTING) throw "INVALID_STATE_ERR: Web Socket connection has not been established";
+                var t = WebSocket.__flash.send(this.__id, encodeURIComponent(e));
+                return 0 > t ? !0 : (this.bufferedAmount += t, !1)
+              }, WebSocket.prototype.close = function () {
+                this.readyState != WebSocket.CLOSED && this.readyState != WebSocket.CLOSING && (this.readyState = WebSocket.CLOSING, WebSocket.__flash.close(this.__id))
+              }, WebSocket.prototype.addEventListener = function (e, t) {
+                e in this.__events || (this.__events[e] = []), this.__events[e].push(t)
+              }, WebSocket.prototype.removeEventListener = function (e, t) {
+                if (e in this.__events)
+                  for (var n = this.__events[e], o = n.length - 1; o >= 0; --o)
+                    if (n[o] === t) {
+                      n.splice(o, 1);
+                      break
+                    }
+                  }, WebSocket.prototype.dispatchEvent = function (e) {
+                    for (var t = this.__events[e.type] || [], n = 0; n < t.length; ++n) t[n](e);
+                      var o = this["on" + e.type];
+                    o && o(e)
+                  }, WebSocket.prototype.__handleEvent = function (e) {
+                    "readyState" in e && (this.readyState = e.readyState), "protocol" in e && (this.protocol = e.protocol);
+                    var t;
+                    if ("open" == e.type || "error" == e.type) t = this.__createSimpleEvent(e.type);
+                    else if ("close" == e.type) t = this.__createSimpleEvent("close");
+                    else {
+                      if ("message" != e.type) throw "unknown event type: " + e.type;
+                      var n = decodeURIComponent(e.message);
+                      t = this.__createMessageEvent("message", n)
+                    }
+                    this.dispatchEvent(t)
+                  }, WebSocket.prototype.__createSimpleEvent = function (e) {
+                    if (document.createEvent && window.Event) {
+                      var t = document.createEvent("Event");
+                      return t.initEvent(e, !1, !1), t
+                    }
+                    return {
+                      type: e,
+                      bubbles: !1,
+                      cancelable: !1
+                    }
+                  }, WebSocket.prototype.__createMessageEvent = function (e, t) {
+                    if (document.createEvent && window.MessageEvent && !window.opera) {
+                      var n = document.createEvent("MessageEvent");
+                      return n.initMessageEvent("message", !1, !1, t, null, null, window, null), n
+                    }
+                    return {
+                      type: e,
+                      data: t,
+                      bubbles: !1,
+                      cancelable: !1
+                    }
+                  }, WebSocket.CONNECTING = 0, WebSocket.OPEN = 1, WebSocket.CLOSING = 2, WebSocket.CLOSED = 3, WebSocket.__flash = null, WebSocket.__instances = {}, WebSocket.__tasks = [], WebSocket.__nextId = 0, WebSocket.loadFlashPolicyFile = function (e) {
+                    WebSocket.__addTask(function () {
+                      WebSocket.__flash.loadManualPolicyFile(e)
+                    })
+                  }, WebSocket.__initialize = function () {
+                    if (!WebSocket.__flash) {
+                      if (WebSocket.__swfLocation && (window.WEB_SOCKET_SWF_LOCATION = WebSocket.__swfLocation), !window.WEB_SOCKET_SWF_LOCATION) return e.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf"), void 0;
+                      var t = document.createElement("div");
+                      t.id = "webSocketContainer", t.style.position = "absolute", WebSocket.__isFlashLite() ? (t.style.left = "0px", t.style.top = "0px") : (t.style.left = "-100px", t.style.top = "-100px");
+                      var n = document.createElement("div");
+                      n.id = "webSocketFlash", t.appendChild(n), document.body.appendChild(t), swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION, "webSocketFlash", "1", "1", "10.0.0", null, null, {
+                        hasPriority: !0,
+                        swliveconnect: !0,
+                        allowScriptAccess: "always"
+                      }, null, function (t) {
+                        t.success || e.error("[WebSocket] swfobject.embedSWF failed")
+                      })
+                    }
+                  }, WebSocket.__onFlashInitialized = function () {
+                    setTimeout(function () {
+                      WebSocket.__flash = document.getElementById("webSocketFlash"), WebSocket.__flash.setCallerUrl(location.href), WebSocket.__flash.setDebug( !! window.WEB_SOCKET_DEBUG);
+                      for (var e = 0; e < WebSocket.__tasks.length; ++e) WebSocket.__tasks[e]();
+                        WebSocket.__tasks = []
+                    }, 0)
+                  }, WebSocket.__onFlashEvent = function () {
+                    return setTimeout(function () {
+                      try {
+                        for (var t = WebSocket.__flash.receiveEvents(), n = 0; n < t.length; ++n) WebSocket.__instances[t[n].webSocketId].__handleEvent(t[n])
+                      } catch (o) {
+                        e.error(o)
+                      }
+                    }, 0), !0
+                  }, WebSocket.__log = function (t) {
+                    e.log(decodeURIComponent(t))
+                  }, WebSocket.__error = function (t) {
+                    e.error(decodeURIComponent(t))
+                  }, WebSocket.__addTask = function (e) {
+                    WebSocket.__flash ? e() : WebSocket.__tasks.push(e)
+                  }, WebSocket.__isFlashLite = function () {
+                    if (!window.navigator || !window.navigator.mimeTypes) return !1;
+                    var e = window.navigator.mimeTypes["application/x-shockwave-flash"];
+                    return e && e.enabledPlugin && e.enabledPlugin.filename ? e.enabledPlugin.filename.match(/flashlite/i) ? !0 : !1 : !1
+                  }, window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION || (window.addEventListener ? window.addEventListener("load", function () {
+                    WebSocket.__initialize()
+                  }, !1) : window.attachEvent("onload", function () {
+                    WebSocket.__initialize()
+                  }))
+                }
+              }(),
+              function (e, t, n) {
+                function o(e) {
+                  e && (t.Transport.apply(this, arguments), this.sendBuffer = [])
+                }
 
-          function o() {
-            this.onload = i, r.socket.setBuffer(!1)
+                function i() {}
+                e.XHR = o, t.util.inherit(o, t.Transport), o.prototype.open = function () {
+                  return this.socket.setBuffer(!1), this.onOpen(), this.get(), this.setCloseTimeout(), this
+                }, o.prototype.payload = function (e) {
+                  for (var n = [], o = 0, i = e.length; i > o; o++) n.push(t.parser.encodePacket(e[o]));
+                    this.send(t.parser.encodePayload(n))
+                }, o.prototype.send = function (e) {
+                  return this.post(e), this
+                }, o.prototype.post = function (e) {
+                  function t() {
+                    4 == this.readyState && (this.onreadystatechange = i, r.posting = !1, 200 == this.status ? r.socket.setBuffer(!1) : r.onClose())
+                  }
+
+                  function o() {
+                    this.onload = i, r.socket.setBuffer(!1)
+                  }
+                  var r = this;
+                  this.socket.setBuffer(!0), this.sendXHR = this.request("POST"), n.XDomainRequest && this.sendXHR instanceof XDomainRequest ? this.sendXHR.onload = this.sendXHR.onerror = o : this.sendXHR.onreadystatechange = t, this.sendXHR.send(e)
+                }, o.prototype.close = function () {
+                  return this.onClose(), this
+                }, o.prototype.request = function (e) {
+                  var n = t.util.request(this.socket.isXDomain()),
+                  o = t.util.query(this.socket.options.query, "t=" + +new Date);
+                  if (n.open(e || "GET", this.prepareUrl() + o, !0), "POST" == e) try {
+                    n.setRequestHeader ? n.setRequestHeader("Content-type", "text/plain;charset=UTF-8") : n.contentType = "text/plain"
+                  } catch (i) {}
+                  return n
+                }, o.prototype.scheme = function () {
+                  return this.socket.options.secure ? "https" : "http"
+                }, o.check = function (e, o) {
+                  try {
+                    var i = t.util.request(o),
+                    r = n.XDomainRequest && i instanceof XDomainRequest,
+                    s = e && e.options && e.options.secure ? "https:" : "http:",
+                    a = n.location && s != n.location.protocol;
+                    if (i && (!r || !a)) return !0
+                  } catch (c) {}
+                return !1
+              }, o.xdomainCheck = function (e) {
+                return o.check(e, !0)
+              }
+            }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this),
+            function (e, t) {
+              function n() {
+                t.Transport.XHR.apply(this, arguments)
+              }
+              e.htmlfile = n, t.util.inherit(n, t.Transport.XHR), n.prototype.name = "htmlfile", n.prototype.get = function () {
+                this.doc = new(window[["Active"].concat("Object").join("X")])("htmlfile"), this.doc.open(), this.doc.write("<html></html>"), this.doc.close(), this.doc.parentWindow.s = this;
+                var e = this.doc.createElement("div");
+                e.className = "socketio", this.doc.body.appendChild(e), this.iframe = this.doc.createElement("iframe"), e.appendChild(this.iframe);
+                var n = this,
+                o = t.util.query(this.socket.options.query, "t=" + +new Date);
+                this.iframe.src = this.prepareUrl() + o, t.util.on(window, "unload", function () {
+                  n.destroy()
+                })
+              }, n.prototype._ = function (e, t) {
+                e = e.replace(/\\\//g, "/"), this.onData(e);
+                try {
+                  var n = t.getElementsByTagName("script")[0];
+                  n.parentNode.removeChild(n)
+                } catch (o) {}
+              }, n.prototype.destroy = function () {
+                if (this.iframe) {
+                  try {
+                    this.iframe.src = "about:blank"
+                  } catch (e) {}
+                  this.doc = null, this.iframe.parentNode.removeChild(this.iframe), this.iframe = null, CollectGarbage()
+                }
+              }, n.prototype.close = function () {
+                return this.destroy(), t.Transport.XHR.prototype.close.call(this)
+              }, n.check = function (e) {
+                if ("undefined" != typeof window && ["Active"].concat("Object").join("X") in window) try {
+                  var n = new(window[["Active"].concat("Object").join("X")])("htmlfile");
+                  return n && t.Transport.XHR.check(e)
+                } catch (o) {}
+                return !1
+              }, n.xdomainCheck = function () {
+                return !1
+              }, t.transports.push("htmlfile")
+            }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports),
+            function (e, t, n) {
+              function o() {
+                t.Transport.XHR.apply(this, arguments)
+              }
+
+              function i() {}
+              e["xhr-polling"] = o, t.util.inherit(o, t.Transport.XHR), t.util.merge(o, t.Transport.XHR), o.prototype.name = "xhr-polling", o.prototype.heartbeats = function () {
+                return !1
+              }, o.prototype.open = function () {
+                var e = this;
+                return t.Transport.XHR.prototype.open.call(e), !1
+              }, o.prototype.get = function () {
+                function e() {
+                  4 == this.readyState && (this.onreadystatechange = i, 200 == this.status ? (r.onData(this.responseText), r.get()) : r.onClose())
+                }
+
+                function t() {
+                  this.onload = i, this.onerror = i, r.retryCounter = 1, r.onData(this.responseText), r.get()
+                }
+
+                function o() {
+                  r.retryCounter++, !r.retryCounter || r.retryCounter > 3 ? r.onClose() : r.get()
+                }
+                if (this.isOpen) {
+                  var r = this;
+                  this.xhr = this.request(), n.XDomainRequest && this.xhr instanceof XDomainRequest ? (this.xhr.onload = t, this.xhr.onerror = o) : this.xhr.onreadystatechange = e, this.xhr.send(null)
+                }
+              }, o.prototype.onClose = function () {
+                if (t.Transport.XHR.prototype.onClose.call(this), this.xhr) {
+                  this.xhr.onreadystatechange = this.xhr.onload = this.xhr.onerror = i;
+                  try {
+                    this.xhr.abort()
+                  } catch (e) {}
+                  this.xhr = null
+                }
+              }, o.prototype.ready = function (e, n) {
+                var o = this;
+                t.util.defer(function () {
+                  n.call(o)
+                })
+              }, t.transports.push("xhr-polling")
+            }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this),
+            function (e, t, n) {
+              function o() {
+                t.Transport["xhr-polling"].apply(this, arguments), this.index = t.j.length;
+                var e = this;
+                t.j.push(function (t) {
+                  e._(t)
+                })
+              }
+              var i = n.document && "MozAppearance" in n.document.documentElement.style;
+              e["jsonp-polling"] = o, t.util.inherit(o, t.Transport["xhr-polling"]), o.prototype.name = "jsonp-polling", o.prototype.post = function (e) {
+                function n() {
+                  o(), i.socket.setBuffer(!1)
+                }
+
+                function o() {
+                  i.iframe && i.form.removeChild(i.iframe);
+                  try {
+                    s = document.createElement('<iframe name="' + i.iframeId + '">')
+                  } catch (e) {
+                    s = document.createElement("iframe"), s.name = i.iframeId
+                  }
+                  s.id = i.iframeId, i.form.appendChild(s), i.iframe = s
+                }
+                var i = this,
+                r = t.util.query(this.socket.options.query, "t=" + +new Date + "&i=" + this.index);
+                if (!this.form) {
+                  var s, a = document.createElement("form"),
+                  c = document.createElement("textarea"),
+                  p = this.iframeId = "socketio_iframe_" + this.index;
+                  a.className = "socketio", a.style.position = "absolute", a.style.top = "0px", a.style.left = "0px", a.style.display = "none", a.target = p, a.method = "POST", a.setAttribute("accept-charset", "utf-8"), c.name = "d", a.appendChild(c), document.body.appendChild(a), this.form = a, this.area = c
+                }
+                this.form.action = this.prepareUrl() + r, o(), this.area.value = t.JSON.stringify(e);
+                try {
+                  this.form.submit()
+                } catch (u) {}
+                this.iframe.attachEvent ? s.onreadystatechange = function () {
+                  "complete" == i.iframe.readyState && n()
+                } : this.iframe.onload = n, this.socket.setBuffer(!0)
+              }, o.prototype.get = function () {
+                var e = this,
+                n = document.createElement("script"),
+                o = t.util.query(this.socket.options.query, "t=" + +new Date + "&i=" + this.index);
+                this.script && (this.script.parentNode.removeChild(this.script), this.script = null), n.async = !0, n.src = this.prepareUrl() + o, n.onerror = function () {
+                  e.onClose()
+                };
+                var r = document.getElementsByTagName("script")[0];
+                r.parentNode.insertBefore(n, r), this.script = n, i && setTimeout(function () {
+                  var e = document.createElement("iframe");
+                  document.body.appendChild(e), document.body.removeChild(e)
+                }, 100)
+              }, o.prototype._ = function (e) {
+                return this.onData(e), this.isOpen && this.get(), this
+              }, o.prototype.ready = function (e, n) {
+                var o = this;
+                return i ? (t.util.load(function () {
+                  n.call(o)
+                }), void 0) : n.call(this)
+              }, o.check = function () {
+                return "document" in n
+              }, o.xdomainCheck = function () {
+                return !0
+              }, t.transports.push("jsonp-polling")
+            }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), "function" == typeof define && define.amd && define([], function () {
+              return io
+            })
+          }()
+        }, {}
+        ],
+        6: [
+        function (e, t) {
+          var n = e("getusermedia");
+          t.exports = function (e) {
+            var t, o = {
+              video: {
+                mandatory: {
+                  chromeMediaSource: "screen"
+                }
+              }
+            };
+            return "http:" === window.location.protocol ? (t = new Error("NavigatorUserMediaError"), t.name = "HTTPS_REQUIRED", e(t)) : (n(o, e), void 0)
           }
-          var r = this;
-          this.socket.setBuffer(!0), this.sendXHR = this.request("POST"), n.XDomainRequest && this.sendXHR instanceof XDomainRequest ? this.sendXHR.onload = this.sendXHR.onerror = o : this.sendXHR.onreadystatechange = t, this.sendXHR.send(e)
-        }, o.prototype.close = function () {
-          return this.onClose(), this
-        }, o.prototype.request = function (e) {
-          var n = t.util.request(this.socket.isXDomain()),
-          o = t.util.query(this.socket.options.query, "t=" + +new Date);
-          if (n.open(e || "GET", this.prepareUrl() + o, !0), "POST" == e) try {
-            n.setRequestHeader ? n.setRequestHeader("Content-type", "text/plain;charset=UTF-8") : n.contentType = "text/plain"
-          } catch (i) {}
-          return n
-        }, o.prototype.scheme = function () {
-          return this.socket.options.secure ? "https" : "http"
-        }, o.check = function (e, o) {
-          try {
-            var i = t.util.request(o),
-            r = n.XDomainRequest && i instanceof XDomainRequest,
-            s = e && e.options && e.options.secure ? "https:" : "http:",
-            a = n.location && s != n.location.protocol;
-            if (i && (!r || !a)) return !0
-          } catch (c) {}
-        return !1
-      }, o.xdomainCheck = function (e) {
-        return o.check(e, !0)
-      }
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this),
-    function (e, t) {
-      function n() {
-        t.Transport.XHR.apply(this, arguments)
-      }
-      e.htmlfile = n, t.util.inherit(n, t.Transport.XHR), n.prototype.name = "htmlfile", n.prototype.get = function () {
-        this.doc = new(window[["Active"].concat("Object").join("X")])("htmlfile"), this.doc.open(), this.doc.write("<html></html>"), this.doc.close(), this.doc.parentWindow.s = this;
-        var e = this.doc.createElement("div");
-        e.className = "socketio", this.doc.body.appendChild(e), this.iframe = this.doc.createElement("iframe"), e.appendChild(this.iframe);
-        var n = this,
-        o = t.util.query(this.socket.options.query, "t=" + +new Date);
-        this.iframe.src = this.prepareUrl() + o, t.util.on(window, "unload", function () {
-          n.destroy()
-        })
-      }, n.prototype._ = function (e, t) {
-        e = e.replace(/\\\//g, "/"), this.onData(e);
-        try {
-          var n = t.getElementsByTagName("script")[0];
-          n.parentNode.removeChild(n)
-        } catch (o) {}
-      }, n.prototype.destroy = function () {
-        if (this.iframe) {
-          try {
-            this.iframe.src = "about:blank"
-          } catch (e) {}
-          this.doc = null, this.iframe.parentNode.removeChild(this.iframe), this.iframe = null, CollectGarbage()
-        }
-      }, n.prototype.close = function () {
-        return this.destroy(), t.Transport.XHR.prototype.close.call(this)
-      }, n.check = function (e) {
-        if ("undefined" != typeof window && ["Active"].concat("Object").join("X") in window) try {
-          var n = new(window[["Active"].concat("Object").join("X")])("htmlfile");
-          return n && t.Transport.XHR.check(e)
-        } catch (o) {}
-        return !1
-      }, n.xdomainCheck = function () {
-        return !1
-      }, t.transports.push("htmlfile")
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports),
-    function (e, t, n) {
-      function o() {
-        t.Transport.XHR.apply(this, arguments)
-      }
-
-      function i() {}
-      e["xhr-polling"] = o, t.util.inherit(o, t.Transport.XHR), t.util.merge(o, t.Transport.XHR), o.prototype.name = "xhr-polling", o.prototype.heartbeats = function () {
-        return !1
-      }, o.prototype.open = function () {
-        var e = this;
-        return t.Transport.XHR.prototype.open.call(e), !1
-      }, o.prototype.get = function () {
-        function e() {
-          4 == this.readyState && (this.onreadystatechange = i, 200 == this.status ? (r.onData(this.responseText), r.get()) : r.onClose())
-        }
-
-        function t() {
-          this.onload = i, this.onerror = i, r.retryCounter = 1, r.onData(this.responseText), r.get()
-        }
-
-        function o() {
-          r.retryCounter++, !r.retryCounter || r.retryCounter > 3 ? r.onClose() : r.get()
-        }
-        if (this.isOpen) {
-          var r = this;
-          this.xhr = this.request(), n.XDomainRequest && this.xhr instanceof XDomainRequest ? (this.xhr.onload = t, this.xhr.onerror = o) : this.xhr.onreadystatechange = e, this.xhr.send(null)
-        }
-      }, o.prototype.onClose = function () {
-        if (t.Transport.XHR.prototype.onClose.call(this), this.xhr) {
-          this.xhr.onreadystatechange = this.xhr.onload = this.xhr.onerror = i;
-          try {
-            this.xhr.abort()
-          } catch (e) {}
-          this.xhr = null
-        }
-      }, o.prototype.ready = function (e, n) {
-        var o = this;
-        t.util.defer(function () {
-          n.call(o)
-        })
-      }, t.transports.push("xhr-polling")
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this),
-    function (e, t, n) {
-      function o() {
-        t.Transport["xhr-polling"].apply(this, arguments), this.index = t.j.length;
-        var e = this;
-        t.j.push(function (t) {
-          e._(t)
-        })
-      }
-      var i = n.document && "MozAppearance" in n.document.documentElement.style;
-      e["jsonp-polling"] = o, t.util.inherit(o, t.Transport["xhr-polling"]), o.prototype.name = "jsonp-polling", o.prototype.post = function (e) {
-        function n() {
-          o(), i.socket.setBuffer(!1)
-        }
-
-        function o() {
-          i.iframe && i.form.removeChild(i.iframe);
-          try {
-            s = document.createElement('<iframe name="' + i.iframeId + '">')
-          } catch (e) {
-            s = document.createElement("iframe"), s.name = i.iframeId
-          }
-          s.id = i.iframeId, i.form.appendChild(s), i.iframe = s
-        }
-        var i = this,
-        r = t.util.query(this.socket.options.query, "t=" + +new Date + "&i=" + this.index);
-        if (!this.form) {
-          var s, a = document.createElement("form"),
-          c = document.createElement("textarea"),
-          p = this.iframeId = "socketio_iframe_" + this.index;
-          a.className = "socketio", a.style.position = "absolute", a.style.top = "0px", a.style.left = "0px", a.style.display = "none", a.target = p, a.method = "POST", a.setAttribute("accept-charset", "utf-8"), c.name = "d", a.appendChild(c), document.body.appendChild(a), this.form = a, this.area = c
-        }
-        this.form.action = this.prepareUrl() + r, o(), this.area.value = t.JSON.stringify(e);
-        try {
-          this.form.submit()
-        } catch (u) {}
-        this.iframe.attachEvent ? s.onreadystatechange = function () {
-          "complete" == i.iframe.readyState && n()
-        } : this.iframe.onload = n, this.socket.setBuffer(!0)
-      }, o.prototype.get = function () {
-        var e = this,
-        n = document.createElement("script"),
-        o = t.util.query(this.socket.options.query, "t=" + +new Date + "&i=" + this.index);
-        this.script && (this.script.parentNode.removeChild(this.script), this.script = null), n.async = !0, n.src = this.prepareUrl() + o, n.onerror = function () {
-          e.onClose()
-        };
-        var r = document.getElementsByTagName("script")[0];
-        r.parentNode.insertBefore(n, r), this.script = n, i && setTimeout(function () {
-          var e = document.createElement("iframe");
-          document.body.appendChild(e), document.body.removeChild(e)
-        }, 100)
-      }, o.prototype._ = function (e) {
-        return this.onData(e), this.isOpen && this.get(), this
-      }, o.prototype.ready = function (e, n) {
-        var o = this;
-        return i ? (t.util.load(function () {
-          n.call(o)
-        }), void 0) : n.call(this)
-      }, o.check = function () {
-        return "document" in n
-      }, o.xdomainCheck = function () {
-        return !0
-      }, t.transports.push("jsonp-polling")
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), "function" == typeof define && define.amd && define([], function () {
-      return io
-    })
-  }()
-}, {}
-],
-6: [
-function (e, t) {
-  var n = e("getusermedia");
-  t.exports = function (e) {
-    var t, o = {
-      video: {
-        mandatory: {
-          chromeMediaSource: "screen"
-        }
-      }
-    };
-    return "http:" === window.location.protocol ? (t = new Error("NavigatorUserMediaError"), t.name = "HTTPS_REQUIRED", e(t)) : (n(o, e), void 0)
-  }
-}, {
-  getusermedia: 9
-}
-],
-10: [
-function (e, t) {
-  var n = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-  t.exports = function (e, t) {
-    var o, i = 2 === arguments.length,
-    r = {
-      video: !0,
-      audio: !0
-    }, s = "PERMISSION_DENIED",
-    a = "CONSTRAINT_NOT_SATISFIED";
-    return i || (t = e, e = r), n ? (n.call(navigator, e, function (e) {
-      t(null, e)
-    }, function (e) {
-      var n;
-      "string" == typeof e ? (n = new Error("NavigatorUserMediaError"), n.name = e === s ? s : a) : (n = e, n.name || (e.name = n[s] ? s : a)), t(n)
-    }), void 0) : (o = new Error("NavigatorUserMediaError"), o.name = "NOT_SUPPORTED_ERROR", t(o))
-  }
-}, {}
-],
-9: [
-function (e, t) {
-  var n = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-  t.exports = function (e, t) {
-    var o, i = 2 === arguments.length,
-    r = {
-      video: !0,
-      audio: !0
-    }, s = "PERMISSION_DENIED",
-    a = "CONSTRAINT_NOT_SATISFIED";
-    return i || (t = e, e = r), n ? (n.call(navigator, e, function (e) {
-      t(null, e)
-    }, function (e) {
-      var n;
-      "string" == typeof e ? (n = new Error("NavigatorUserMediaError"), n.name = e === s ? s : a) : (n = e, n.name || (e.name = n[s] ? s : a)), t(n)
-    }), void 0) : (o = new Error("NavigatorUserMediaError"), o.name = "NOT_SUPPORTED_ERROR", t(o))
-  }
-}, {}
-],
-2: [
-function (e, t) {
-  function n(e) {
-    var t = this,
-    n = e || {};
-    this.config = {
-      debug: !1,
-      localVideoEl: "",
-      remoteVideosEl: "",
-      autoRequestMedia: !1,
-      peerConnectionConfig: {
-        iceServers: [{
-          url: "stun:stun.l.google.com:19302"
-        }]
-      },
-      peerConnectionContraints: {
-        optional: [{
-          DtlsSrtpKeyAgreement: !0
         }, {
-          RtpDataChannels: !0
-        }]
-      },
-      autoAdjustMic: !1,
-      media: {
-        audio: !0,
-        video: !0
-      },
-      detectSpeakingEvents: !0,
-      enableDataChannels: !0
-    };
-    var o;
-    this.screenSharingSupport = i.screenSharing, this.logger = function () {
-      return e.debug ? e.logger || console : e.logger || u
-    }();
-    for (o in n) this.config[o] = n[o];
-      i.support || this.logger.error("Your browser doesn't seem to support WebRTC"), this.peers = [], a.call(this), this.config.debug && this.on("*", function (e, n, o) {
-        var i;
-        i = t.config.logger === u ? console : t.logger, i.log("event:", e, n, o)
-      })
-  }
+          getusermedia: 9
+        }
+        ],
+        10: [
+        function (e, t) {
+          var n = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+          t.exports = function (e, t) {
+            var o, i = 2 === arguments.length,
+            r = {
+              video: !0,
+              audio: !0
+            }, s = "PERMISSION_DENIED",
+            a = "CONSTRAINT_NOT_SATISFIED";
+            return i || (t = e, e = r), n ? (n.call(navigator, e, function (e) {
+              t(null, e)
+            }, function (e) {
+              var n;
+              "string" == typeof e ? (n = new Error("NavigatorUserMediaError"), n.name = e === s ? s : a) : (n = e, n.name || (e.name = n[s] ? s : a)), t(n)
+            }), void 0) : (o = new Error("NavigatorUserMediaError"), o.name = "NOT_SUPPORTED_ERROR", t(o))
+          }
+        }, {}
+        ],
+        9: [
+        function (e, t) {
+          var n = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+          t.exports = function (e, t) {
+            var o, i = 2 === arguments.length,
+            r = {
+              video: !0,
+              audio: !0
+            }, s = "PERMISSION_DENIED",
+            a = "CONSTRAINT_NOT_SATISFIED";
+            return i || (t = e, e = r), n ? (n.call(navigator, e, function (e) {
+              t(null, e)
+            }, function (e) {
+              var n;
+              "string" == typeof e ? (n = new Error("NavigatorUserMediaError"), n.name = e === s ? s : a) : (n = e, n.name || (e.name = n[s] ? s : a)), t(n)
+            }), void 0) : (o = new Error("NavigatorUserMediaError"), o.name = "NOT_SUPPORTED_ERROR", t(o))
+          }
+        }, {}
+        ],
+        2: [
+        function (e, t) {
+          function n(e) {
+            var t = this,
+            n = e || {};
+            this.config = {
+              debug: !1,
+              localVideoEl: "",
+              remoteVideosEl: "",
+              autoRequestMedia: !1,
+              peerConnectionConfig: {
+                iceServers: [{
+                  url: "stun:stun.l.google.com:19302"
+                }]
+              },
+              peerConnectionContraints: {
+                optional: [{
+                  DtlsSrtpKeyAgreement: !0
+                }, {
+                  RtpDataChannels: !0
+                }]
+              },
+              autoAdjustMic: !1,
+              media: {
+                audio: !0,
+                video: !0
+              },
+              detectSpeakingEvents: !0,
+              enableDataChannels: !0
+            };
+            var o;
+            this.screenSharingSupport = i.screenSharing, this.logger = function () {
+              return e.debug ? e.logger || console : e.logger || u
+            }();
+            for (o in n) this.config[o] = n[o];
+              i.support || this.logger.error("Your browser doesn't seem to support WebRTC"), this.peers = [], a.call(this), this.config.debug && this.on("*", function (e, n, o) {
+                var i;
+                i = t.config.logger === u ? console : t.logger, i.log("event:", e, n, o)
+              })
+          }
 
-  function o(e) {
-    var t = this;
-    if (this.id = e.id, this.parent = e.parent, this.type = e.type || "video", this.oneway = e.oneway || !1, this.sharemyscreen = e.sharemyscreen || !1, this.browserPrefix = e.prefix, this.stream = e.stream, this.channels = {}, this.pc = new s(this.parent.config.peerConnectionConfig, this.parent.config.peerConnectionContraints), this.pc.on("ice", this.onIceCandidate.bind(this)), this.pc.on("addStream", this.handleRemoteStreamAdded.bind(this)), this.pc.on("addChannel", this.handleDataChannelAdded.bind(this)), this.pc.on("removeStream", this.handleStreamRemoved.bind(this)), this.pc.on("negotiationNeeded", this.emit.bind(this, "negotiationNeeded")), this.logger = this.parent.logger, "screen" === e.type ? this.parent.localScreen && this.sharemyscreen && (this.logger.log("adding local screen stream to peer connection"), this.pc.addStream(this.parent.localScreen), this.broadcaster = e.broadcaster) : this.pc.addStream(this.parent.localStream), this.parent.config.enableDataChannels && i.dataChannel) {
-      try {
-        if (this.reliableChannel = this.getDataChannel("reliable", {
-          reliable: !0
-        }), !this.reliableChannel.reliable) throw Error("Failed to make reliable channel")
-      } catch (n) {
-        this.logger.warn("Failed to create reliable data channel."), this.reliableChannel = !1, delete this.channels.reliable
-      }
-      try {
-        if (this.unreliableChannel = this.getDataChannel("unreliable", {
-          reliable: !1,
-          preset: !0
-        }), this.unreliableChannel.unreliable !== !1) throw Error("Failed to make unreliable channel")
-      } catch (n) {
-        this.logger.warn("Failed to create unreliable data channel."), this.unreliableChannel = !1, delete this.channels.unreliableChannel
-      }
-    }
-    a.call(this), this.on("*", function () {
-      t.parent.emit.apply(t.parent, arguments)
-    })
-  }
-  var i = e("webrtcsupport"),
-  r = e("getusermedia"),
-  s = e("rtcpeerconnection"),
-  a = e("wildemitter"),
-  c = e("hark"),
-  p = e("mediastream-gain"),
-  u = e("mockconsole");
-  n.prototype = Object.create(a.prototype, {
-    constructor: {
-      value: n
-    }
-  }), n.prototype.createPeer = function (e) {
-    var t;
-    return e.parent = this, t = new o(e), this.peers.push(t), t
-  }, n.prototype.startLocalMedia = function (e, t) {
-    var n = this,
-    o = e || {
-      video: !0,
-      audio: !0
-    };
-    r(o, function (e, i) {
-      e || (o.audio && n.config.detectSpeakingEvents && n.setupAudioMonitor(i), n.localStream = i, n.config.autoAdjustMic && (n.gainController = new p(i), n.setMicIfEnabled(.5)), n.emit("localStream", i)), t && t(e, i)
-    })
-  }, n.prototype.stopLocalMedia = function () {
-    this.localStream && (this.localStream.stop(), this.emit("localStreamStopped"))
-  }, n.prototype.mute = function () {
-    this._audioEnabled(!1), this.hardMuted = !0, this.emit("audioOff")
-  }, n.prototype.unmute = function () {
-    this._audioEnabled(!0), this.hardMuted = !1, this.emit("audioOn")
-  }, n.prototype.setupAudioMonitor = function (e) {
-    this.logger.log("Setup audio");
-    var t, n = c(e),
-    o = this;
-    n.on("speaking", function () {
-      o.hardMuted || (o.setMicIfEnabled(1), o.sendToAll("speaking", {}), o.emit("speaking"))
-    }), n.on("stopped_speaking", function () {
-      o.hardMuted || (t && clearTimeout(t), t = setTimeout(function () {
-        o.setMicIfEnabled(.5), o.sendToAll("stopped_speaking", {}), o.emit("stoppedSpeaking")
-      }, 1e3))
-    })
-  }, n.prototype.setMicIfEnabled = function (e) {
-    this.config.autoAdjustMic && this.gainController.setGain(e)
-  }, n.prototype.pauseVideo = function () {
-    this._videoEnabled(!1), this.emit("videoOff")
-  }, n.prototype.resumeVideo = function () {
-    this._videoEnabled(!0), this.emit("videoOn")
-  }, n.prototype.pause = function () {
-    this._audioEnabled(!1), this.pauseVideo()
-  }, n.prototype.resume = function () {
-    this._audioEnabled(!0), this.resumeVideo()
-  }, n.prototype._audioEnabled = function (e) {
-    this.setMicIfEnabled(e ? 1 : 0), this.localStream.getAudioTracks().forEach(function (t) {
-      t.enabled = !! e
-    })
-  }, n.prototype._videoEnabled = function (e) {
-    this.localStream.getVideoTracks().forEach(function (t) {
-      t.enabled = !! e
-    })
-  }, n.prototype.removePeers = function (e, t) {
-    this.getPeers(e, t).forEach(function (e) {
-      e.end()
-    })
-  }, n.prototype.getPeers = function (e, t) {
-    return this.peers.filter(function (n) {
-      return !(e && n.id !== e || t && n.type !== t)
-    })
-  }, n.prototype.sendToAll = function (e, t) {
-    this.peers.forEach(function (n) {
-      n.send(e, t)
-    })
-  }, o.prototype = Object.create(a.prototype, {
-    constructor: {
-      value: o
-    }
-  }), o.prototype.handleMessage = function (e) {
-    var t = this;
-    this.logger.log("getting", e.type, e), e.prefix && (this.browserPrefix = e.prefix), "offer" === e.type ? this.pc.answer(e.payload, function (e, n) {
-      t.send("answer", n)
-    }) : "answer" === e.type ? this.pc.handleAnswer(e.payload) : "candidate" === e.type ? this.pc.processIce(e.payload) : "speaking" === e.type ? this.parent.emit("speaking", {
-      id: e.from
-    }) : "stopped_speaking" === e.type && this.parent.emit("stopped_speaking", {
-      id: e.from
-    })
-  }, o.prototype.send = function (e, t) {
-    var n = {
-      to: this.id,
-      broadcaster: this.broadcaster,
-      roomType: this.type,
-      type: e,
-      payload: t,
-      prefix: i.prefix
-    };
-    this.logger.log("sending", e, n), this.parent.emit("message", n)
-  }, o.prototype._observeDataChannel = function (e) {
-    var t = this;
-    e.onclose = this.emit.bind(this, "channelClose", e), e.onerror = this.emit.bind(this, "channelError", e), e.onmessage = function (n) {
-      t.emit("message", e.label, n.data, e, n)
-    }, e.onopen = this.emit.bind(this, "channelOpen", e)
-  }, o.prototype.getDataChannel = function (e, t) {
-    if (!i.dataChannel) return this.emit("error", new Error("createDataChannel not supported"));
-    var n = this.channels[e];
-    return t || (t = {}), n ? n : (n = this.channels[e] = this.pc.createDataChannel(e, t), this._observeDataChannel(n), n)
-  }, o.prototype.onIceCandidate = function (e) {
-    this.closed || (e ? this.send("candidate", e) : this.logger.log("End of candidates."))
-  }, o.prototype.start = function () {
-    var e = this;
-    this.pc.offer(function (t, n) {
-      e.send("offer", n)
-    })
-  }, o.prototype.end = function () {
-    this.pc.close(), this.handleStreamRemoved()
-  }, o.prototype.handleRemoteStreamAdded = function (e) {
-    this.stream ? this.logger.warn("Already have a remote stream") : (this.stream = e.stream, this.parent.emit("peerStreamAdded", this))
-  }, o.prototype.handleStreamRemoved = function () {
-    this.parent.peers.splice(this.parent.peers.indexOf(this), 1), this.closed = !0, this.parent.emit("peerStreamRemoved", this)
-  }, o.prototype.handleDataChannelAdded = function (e) {
-    this.channels[e.name] = e
-  }, t.exports = n
-}, {
-  getusermedia: 10,
-  hark: 13,
-  "mediastream-gain": 12,
-  mockconsole: 7,
-  rtcpeerconnection: 11,
-  webrtcsupport: 4,
-  wildemitter: 3
-}
-],
-11: [
-function (e, t) {
-  function n(e, t) {
-    var n;
-    this.pc = new i.PeerConnection(e, t), o.call(this), this.pc.onremovestream = this.emit.bind(this, "removeStream"), this.pc.onnegotiationneeded = this.emit.bind(this, "negotiationNeeded"), this.pc.oniceconnectionstatechange = this.emit.bind(this, "iceConnectionStateChange"), this.pc.onsignalingstatechange = this.emit.bind(this, "signalingStateChange"), this.pc.onaddstream = this._onAddStream.bind(this), this.pc.onicecandidate = this._onIce.bind(this), this.pc.ondatachannel = this._onDataChannel.bind(this), this.config = {
-      debug: !1,
-      sdpHack: !0
-    };
-    for (n in e) this.config[n] = e[n];
-      this.config.debug && this.on("*", function () {
-        var t = e.logger || console;
-        t.log("PeerConnection event:", arguments)
-      })
-  }
-  var o = e("wildemitter"),
-  i = e("webrtcsupport");
-  n.prototype = Object.create(o.prototype, {
-    constructor: {
-      value: n
-    }
-  }), n.prototype.addStream = function (e) {
-    this.localStream = e, this.pc.addStream(e)
-  }, n.prototype.processIce = function (e) {
-    this.pc.addIceCandidate(new i.IceCandidate(e))
-  }, n.prototype.offer = function (e, t) {
-    var n = this,
-    o = 2 === arguments.length,
-    i = o ? e : {
-      mandatory: {
-        OfferToReceiveAudio: !0,
-        OfferToReceiveVideo: !0
-      }
-    }, r = o ? t : e;
-    this.pc.createOffer(function (e) {
-      e.sdp = n._applySdpHack(e.sdp), n.pc.setLocalDescription(e), n.emit("offer", e), r && r(null, e)
-    }, function (e) {
-      n.emit("error", e), r && r(e)
-    }, i)
-  }, n.prototype.answerAudioOnly = function (e, t) {
-    var n = {
-      mandatory: {
-        OfferToReceiveAudio: !0,
-        OfferToReceiveVideo: !1
-      }
-    };
-    this._answer(e, n, t)
-  }, n.prototype.answerBroadcastOnly = function (e, t) {
-    var n = {
-      mandatory: {
-        OfferToReceiveAudio: !1,
-        OfferToReceiveVideo: !1
-      }
-    };
-    this._answer(e, n, t)
-  }, n.prototype.answer = function (e, t, n) {
-    var o = 3 === arguments.length,
-    i = o ? n : t,
-    r = o ? t : {
-      mandatory: {
-        OfferToReceiveAudio: !0,
-        OfferToReceiveVideo: !0
-      }
-    };
-    this._answer(e, r, i)
-  }, n.prototype.handleAnswer = function (e) {
-    this.pc.setRemoteDescription(new i.SessionDescription(e))
-  }, n.prototype.close = function () {
-    this.pc.close(), this.emit("close")
-  }, n.prototype._answer = function (e, t, n) {
-    var o = this;
-    this.pc.setRemoteDescription(new i.SessionDescription(e)), this.pc.createAnswer(function (e) {
-      e.sdp = o._applySdpHack(e.sdp), o.pc.setLocalDescription(e), o.emit("answer", e), n && n(null, e)
-    }, function (e) {
-      o.emit("error", e), n && n(e)
-    }, t)
-  }, n.prototype._onIce = function (e) {
-    e.candidate ? this.emit("ice", e.candidate) : this.emit("endOfCandidates")
-  }, n.prototype._onDataChannel = function (e) {
-    this.emit("addChannel", e.channel)
-  }, n.prototype._onAddStream = function (e) {
-    this.remoteStream = e.stream, this.emit("addStream", e)
-  }, n.prototype._applySdpHack = function (e) {
-    if (!this.config.sdpHack) return e;
-    var t = e.split("b=AS:30");
-    return 2 === t.length ? t[0] + "b=AS:102400" + t[1] : e
-  }, n.prototype.createDataChannel = function (e, t) {
-    t || (t = {});
-    var n, o, r = !! t.reliable,
-    s = t.protocol || "text/plain",
-    a = !(!t.negotiated && !t.preset);
-    return "moz" === i.prefix ? (n = r ? {
-      protocol: s,
-      preset: a,
-      stream: e
-    } : {}, o = this.pc.createDataChannel(e, n), o.binaryType = "blob") : (n = r ? {
-      reliable: !0
-    } : {
-      reliable: !1
-    }, o = this.pc.createDataChannel(e, n)), o
-  }, t.exports = n
-}, {
-  webrtcsupport: 4,
-  wildemitter: 3
-}
-],
-13: [
-function (e, t) {
-  function n(e, t) {
-    var n = -1 / 0;
-    e.getFloatFrequencyData(t);
-    for (var o = 0, i = t.length; i > o; o++) t[o] > n && t[o] < 0 && (n = t[o]);
-      return n
-  }
-  var o = e("wildemitter");
-  t.exports = function (e, t) {
-    var i = new o;
-    if (!window.webkitAudioContext) return i;
-    var r, s, a, t = t || {}, c = t.smoothing || .5,
-    p = t.interval || 100,
-    u = t.threshold,
-    h = t.play,
-    l = new webkitAudioContext;
-    a = l.createAnalyser(), a.fftSize = 512, a.smoothingTimeConstant = c, s = new Float32Array(a.fftSize), e.jquery && (e = e[0]), e instanceof HTMLAudioElement ? (r = l.createMediaElementSource(e), "undefined" == typeof h && (h = !0), u = u || -65) : (r = l.createMediaStreamSource(e), u = u || -45), r.connect(a), h && a.connect(l.destination), i.speaking = !1, i.setThreshold = function (e) {
-      u = e
-    }, i.setInterval = function (e) {
-      p = e
-    };
-    var d = function () {
-      setTimeout(function () {
-        var e = n(a, s);
-        i.emit("volume_change", e, u), e > u ? i.speaking || (i.speaking = !0, i.emit("speaking")) : i.speaking && (i.speaking = !1, i.emit("stopped_speaking")), d()
-      }, p)
-    };
-    return d(), i
-  }
-}, {
-  wildemitter: 3
-}
-],
-12: [
-function (e, t) {
-  function n(e) {
-    if (this.support = o.webAudio && o.mediaStream, this.gain = 1, this.support) {
-      var t = this.context = new o.AudioContext;
-      this.microphone = t.createMediaStreamSource(e), this.gainFilter = t.createGain(), this.destination = t.createMediaStreamDestination(), this.outputStream = this.destination.stream, this.microphone.connect(this.gainFilter), this.gainFilter.connect(this.destination), e.removeTrack(e.getAudioTracks()[0]), e.addTrack(this.outputStream.getAudioTracks()[0])
-    }
-    this.stream = e
-  }
-  var o = e("webrtcsupport");
-  n.prototype.setGain = function (e) {
-    this.support && (this.gainFilter.gain.value = e, this.gain = e)
-  }, n.prototype.getGain = function () {
-    return this.gain
-  }, n.prototype.off = function () {
-    return this.setGain(0)
-  }, n.prototype.on = function () {
-    this.setGain(1)
-  }, t.exports = n
-}, {
-  webrtcsupport: 4
-}
-]
-}, {}, [1])(1)
-});
+          function o(e) {
+            var t = this;
+            if (this.id = e.id, this.parent = e.parent, this.type = e.type || "video", this.oneway = e.oneway || !1, this.sharemyscreen = e.sharemyscreen || !1, this.browserPrefix = e.prefix, this.stream = e.stream, this.channels = {}, this.pc = new s(this.parent.config.peerConnectionConfig, this.parent.config.peerConnectionContraints), this.pc.on("ice", this.onIceCandidate.bind(this)), this.pc.on("addStream", this.handleRemoteStreamAdded.bind(this)), this.pc.on("addChannel", this.handleDataChannelAdded.bind(this)), this.pc.on("removeStream", this.handleStreamRemoved.bind(this)), this.pc.on("negotiationNeeded", this.emit.bind(this, "negotiationNeeded")), this.logger = this.parent.logger, "screen" === e.type ? this.parent.localScreen && this.sharemyscreen && (this.logger.log("adding local screen stream to peer connection"), this.pc.addStream(this.parent.localScreen), this.broadcaster = e.broadcaster) : this.pc.addStream(this.parent.localStream), this.parent.config.enableDataChannels && i.dataChannel) {
+              try {
+                if (this.reliableChannel = this.getDataChannel("reliable", {
+                  reliable: !0
+                }), !this.reliableChannel.reliable) throw Error("Failed to make reliable channel")
+              } catch (n) {
+                this.logger.warn("Failed to create reliable data channel."), this.reliableChannel = !1, delete this.channels.reliable
+              }
+              try {
+                if (this.unreliableChannel = this.getDataChannel("unreliable", {
+                  reliable: !1,
+                  preset: !0
+                }), this.unreliableChannel.unreliable !== !1) throw Error("Failed to make unreliable channel")
+              } catch (n) {
+                this.logger.warn("Failed to create unreliable data channel."), this.unreliableChannel = !1, delete this.channels.unreliableChannel
+              }
+            }
+            a.call(this), this.on("*", function () {
+              t.parent.emit.apply(t.parent, arguments)
+            })
+          }
+          var i = e("webrtcsupport"),
+          r = e("getusermedia"),
+          s = e("rtcpeerconnection"),
+          a = e("wildemitter"),
+          c = e("hark"),
+          p = e("mediastream-gain"),
+          u = e("mockconsole");
+          n.prototype = Object.create(a.prototype, {
+            constructor: {
+              value: n
+            }
+          }), n.prototype.createPeer = function (e) {
+            var t;
+            return e.parent = this, t = new o(e), this.peers.push(t), t
+          }, n.prototype.startLocalMedia = function (e, t) {
+            var n = this,
+            o = e || {
+              video: !0,
+              audio: !0
+            };
+            r(o, function (e, i) {
+              e || (o.audio && n.config.detectSpeakingEvents && n.setupAudioMonitor(i), n.localStream = i, n.config.autoAdjustMic && (n.gainController = new p(i), n.setMicIfEnabled(.5)), n.emit("localStream", i)), t && t(e, i)
+            })
+          }, n.prototype.stopLocalMedia = function () {
+            this.localStream && (this.localStream.stop(), this.emit("localStreamStopped"))
+          }, n.prototype.mute = function () {
+            this._audioEnabled(!1), this.hardMuted = !0, this.emit("audioOff")
+          }, n.prototype.unmute = function () {
+            this._audioEnabled(!0), this.hardMuted = !1, this.emit("audioOn")
+          }, n.prototype.setupAudioMonitor = function (e) {
+            this.logger.log("Setup audio");
+            var t, n = c(e),
+            o = this;
+            n.on("speaking", function () {
+              o.hardMuted || (o.setMicIfEnabled(1), o.sendToAll("speaking", {}), o.emit("speaking"))
+            }), n.on("stopped_speaking", function () {
+              o.hardMuted || (t && clearTimeout(t), t = setTimeout(function () {
+                o.setMicIfEnabled(.5), o.sendToAll("stopped_speaking", {}), o.emit("stoppedSpeaking")
+              }, 1e3))
+            })
+          }, n.prototype.setMicIfEnabled = function (e) {
+            this.config.autoAdjustMic && this.gainController.setGain(e)
+          }, n.prototype.pauseVideo = function () {
+            this._videoEnabled(!1), this.emit("videoOff")
+          }, n.prototype.resumeVideo = function () {
+            this._videoEnabled(!0), this.emit("videoOn")
+          }, n.prototype.pause = function () {
+            this._audioEnabled(!1), this.pauseVideo()
+          }, n.prototype.resume = function () {
+            this._audioEnabled(!0), this.resumeVideo()
+          }, n.prototype._audioEnabled = function (e) {
+            this.setMicIfEnabled(e ? 1 : 0), this.localStream.getAudioTracks().forEach(function (t) {
+              t.enabled = !! e
+            })
+          }, n.prototype._videoEnabled = function (e) {
+            this.localStream.getVideoTracks().forEach(function (t) {
+              t.enabled = !! e
+            })
+          }, n.prototype.removePeers = function (e, t) {
+            this.getPeers(e, t).forEach(function (e) {
+              e.end()
+            })
+          }, n.prototype.getPeers = function (e, t) {
+            return this.peers.filter(function (n) {
+              return !(e && n.id !== e || t && n.type !== t)
+            })
+          }, n.prototype.sendToAll = function (e, t) {
+            this.peers.forEach(function (n) {
+              n.send(e, t)
+            })
+          }, o.prototype = Object.create(a.prototype, {
+            constructor: {
+              value: o
+            }
+          }), o.prototype.handleMessage = function (e) {
+            var t = this;
+            this.logger.log("getting", e.type, e), e.prefix && (this.browserPrefix = e.prefix), "offer" === e.type ? this.pc.answer(e.payload, function (e, n) {
+              t.send("answer", n)
+            }) : "answer" === e.type ? this.pc.handleAnswer(e.payload) : "candidate" === e.type ? this.pc.processIce(e.payload) : "speaking" === e.type ? this.parent.emit("speaking", {
+              id: e.from
+            }) : "stopped_speaking" === e.type && this.parent.emit("stopped_speaking", {
+              id: e.from
+            })
+          }, o.prototype.send = function (e, t) {
+            var n = {
+              to: this.id,
+              broadcaster: this.broadcaster,
+              roomType: this.type,
+              type: e,
+              payload: t,
+              prefix: i.prefix
+            };
+            this.logger.log("sending", e, n), this.parent.emit("message", n)
+          }, o.prototype._observeDataChannel = function (e) {
+            var t = this;
+            e.onclose = this.emit.bind(this, "channelClose", e), e.onerror = this.emit.bind(this, "channelError", e), e.onmessage = function (n) {
+              t.emit("message", e.label, n.data, e, n)
+            }, e.onopen = this.emit.bind(this, "channelOpen", e)
+          }, o.prototype.getDataChannel = function (e, t) {
+            if (!i.dataChannel) return this.emit("error", new Error("createDataChannel not supported"));
+            var n = this.channels[e];
+            return t || (t = {}), n ? n : (n = this.channels[e] = this.pc.createDataChannel(e, t), this._observeDataChannel(n), n)
+          }, o.prototype.onIceCandidate = function (e) {
+            this.closed || (e ? this.send("candidate", e) : this.logger.log("End of candidates."))
+          }, o.prototype.start = function () {
+            var e = this;
+            this.pc.offer(function (t, n) {
+              e.send("offer", n)
+            })
+          }, o.prototype.end = function () {
+            this.pc.close(), this.handleStreamRemoved()
+          }, o.prototype.handleRemoteStreamAdded = function (e) {
+            this.stream ? this.logger.warn("Already have a remote stream") : (this.stream = e.stream, this.parent.emit("peerStreamAdded", this))
+          }, o.prototype.handleStreamRemoved = function () {
+            this.parent.peers.splice(this.parent.peers.indexOf(this), 1), this.closed = !0, this.parent.emit("peerStreamRemoved", this)
+          }, o.prototype.handleDataChannelAdded = function (e) {
+            this.channels[e.name] = e
+          }, t.exports = n
+        }, {
+          getusermedia: 10,
+          hark: 13,
+          "mediastream-gain": 12,
+          mockconsole: 7,
+          rtcpeerconnection: 11,
+          webrtcsupport: 4,
+          wildemitter: 3
+        }
+        ],
+        11: [
+        function (e, t) {
+          function n(e, t) {
+            var n;
+            this.pc = new i.PeerConnection(e, t), o.call(this), this.pc.onremovestream = this.emit.bind(this, "removeStream"), this.pc.onnegotiationneeded = this.emit.bind(this, "negotiationNeeded"), this.pc.oniceconnectionstatechange = this.emit.bind(this, "iceConnectionStateChange"), this.pc.onsignalingstatechange = this.emit.bind(this, "signalingStateChange"), this.pc.onaddstream = this._onAddStream.bind(this), this.pc.onicecandidate = this._onIce.bind(this), this.pc.ondatachannel = this._onDataChannel.bind(this), this.config = {
+              debug: !1,
+              sdpHack: !0
+            };
+            for (n in e) this.config[n] = e[n];
+              this.config.debug && this.on("*", function () {
+                var t = e.logger || console;
+                t.log("PeerConnection event:", arguments)
+              })
+          }
+          var o = e("wildemitter"),
+          i = e("webrtcsupport");
+          n.prototype = Object.create(o.prototype, {
+            constructor: {
+              value: n
+            }
+          }), n.prototype.addStream = function (e) {
+            this.localStream = e, this.pc.addStream(e)
+          }, n.prototype.processIce = function (e) {
+            this.pc.addIceCandidate(new i.IceCandidate(e))
+          }, n.prototype.offer = function (e, t) {
+            var n = this,
+            o = 2 === arguments.length,
+            i = o ? e : {
+              mandatory: {
+                OfferToReceiveAudio: !0,
+                OfferToReceiveVideo: !0
+              }
+            }, r = o ? t : e;
+            this.pc.createOffer(function (e) {
+              e.sdp = n._applySdpHack(e.sdp), n.pc.setLocalDescription(e), n.emit("offer", e), r && r(null, e)
+            }, function (e) {
+              n.emit("error", e), r && r(e)
+            }, i)
+          }, n.prototype.answerAudioOnly = function (e, t) {
+            var n = {
+              mandatory: {
+                OfferToReceiveAudio: !0,
+                OfferToReceiveVideo: !1
+              }
+            };
+            this._answer(e, n, t)
+          }, n.prototype.answerBroadcastOnly = function (e, t) {
+            var n = {
+              mandatory: {
+                OfferToReceiveAudio: !1,
+                OfferToReceiveVideo: !1
+              }
+            };
+            this._answer(e, n, t)
+          }, n.prototype.answer = function (e, t, n) {
+            var o = 3 === arguments.length,
+            i = o ? n : t,
+            r = o ? t : {
+              mandatory: {
+                OfferToReceiveAudio: !0,
+                OfferToReceiveVideo: !0
+              }
+            };
+            this._answer(e, r, i)
+          }, n.prototype.handleAnswer = function (e) {
+            this.pc.setRemoteDescription(new i.SessionDescription(e))
+          }, n.prototype.close = function () {
+            this.pc.close(), this.emit("close")
+          }, n.prototype._answer = function (e, t, n) {
+            var o = this;
+            this.pc.setRemoteDescription(new i.SessionDescription(e), function(){
+              o.pc.createAnswer(function (e) {
+                e.sdp = o._applySdpHack(e.sdp), o.pc.setLocalDescription(e), o.emit("answer", e), n && n(null, e)
+              }, function (e) {
+                console.log("err", e);
+                o.emit("error", e), n && n(e)
+              }, t)
+            }, function (e) {
+              console.log("err", e);
+            });
+          }, n.prototype._onIce = function (e) {
+            e.candidate ? this.emit("ice", e.candidate) : this.emit("endOfCandidates")
+          }, n.prototype._onDataChannel = function (e) {
+            this.emit("addChannel", e.channel)
+          }, n.prototype._onAddStream = function (e) {
+            this.remoteStream = e.stream, this.emit("addStream", e)
+          }, n.prototype._applySdpHack = function (e) {
+            if (!this.config.sdpHack) return e;
+            var t = e.split("b=AS:30");
+            return 2 === t.length ? t[0] + "b=AS:102400" + t[1] : e
+          }, n.prototype.createDataChannel = function (e, t) {
+            t || (t = {});
+            var n, o, r = !! t.reliable,
+            s = t.protocol || "text/plain",
+            a = !(!t.negotiated && !t.preset);
+            return "moz" === i.prefix ? (n = r ? {
+              protocol: s,
+              preset: a,
+              stream: e
+            } : {}, o = this.pc.createDataChannel(e, n), o.binaryType = "blob") : (n = r ? {
+              reliable: !0
+            } : {
+              reliable: !1
+            }, o = this.pc.createDataChannel(e, n)), o
+          }, t.exports = n
+        }, {
+          webrtcsupport: 4,
+          wildemitter: 3
+        }
+        ],
+        13: [
+        function (e, t) {
+          function n(e, t) {
+            var n = -1 / 0;
+            e.getFloatFrequencyData(t);
+            for (var o = 0, i = t.length; i > o; o++) t[o] > n && t[o] < 0 && (n = t[o]);
+              return n
+          }
+          var o = e("wildemitter");
+          t.exports = function (e, t) {
+            var i = new o;
+            if (!window.webkitAudioContext) return i;
+            var r, s, a, t = t || {}, c = t.smoothing || .5,
+            p = t.interval || 100,
+            u = t.threshold,
+            h = t.play,
+            l = new webkitAudioContext;
+            a = l.createAnalyser(), a.fftSize = 512, a.smoothingTimeConstant = c, s = new Float32Array(a.fftSize), e.jquery && (e = e[0]), e instanceof HTMLAudioElement ? (r = l.createMediaElementSource(e), "undefined" == typeof h && (h = !0), u = u || -65) : (r = l.createMediaStreamSource(e), u = u || -45), r.connect(a), h && a.connect(l.destination), i.speaking = !1, i.setThreshold = function (e) {
+              u = e
+            }, i.setInterval = function (e) {
+              p = e
+            };
+            var d = function () {
+              setTimeout(function () {
+                var e = n(a, s);
+                i.emit("volume_change", e, u), e > u ? i.speaking || (i.speaking = !0, i.emit("speaking")) : i.speaking && (i.speaking = !1, i.emit("stopped_speaking")), d()
+              }, p)
+            };
+            return d(), i
+          }
+        }, {
+          wildemitter: 3
+        }
+        ],
+        12: [
+        function (e, t) {
+          function n(e) {
+            if (this.support = o.webAudio && o.mediaStream, this.gain = 1, this.support) {
+              var t = this.context = new o.AudioContext;
+              this.microphone = t.createMediaStreamSource(e), this.gainFilter = t.createGain(), this.destination = t.createMediaStreamDestination(), this.outputStream = this.destination.stream, this.microphone.connect(this.gainFilter), this.gainFilter.connect(this.destination), e.removeTrack(e.getAudioTracks()[0]), e.addTrack(this.outputStream.getAudioTracks()[0])
+            }
+            this.stream = e
+          }
+          var o = e("webrtcsupport");
+          n.prototype.setGain = function (e) {
+            this.support && (this.gainFilter.gain.value = e, this.gain = e)
+          }, n.prototype.getGain = function () {
+            return this.gain
+          }, n.prototype.off = function () {
+            return this.setGain(0)
+          }, n.prototype.on = function () {
+            this.setGain(1)
+          }, t.exports = n
+        }, {
+          webrtcsupport: 4
+        }
+        ]
+      }, {}, [1])(1)
+    });
 var io = "undefined" == typeof module ? {} : module.exports;
 ! function () {
   ! function (e, t) {
@@ -2438,64 +2452,64 @@ var io = "undefined" == typeof module ? {} : module.exports;
                   "flash policy port": 10843,
                   manualFlush: !1
                 }, t.util.merge(this.options, e), this.connected = !1, this.open = !1, this.connecting = !1, this.reconnecting = !1, this.namespaces = {}, this.buffer = [], this.doBuffer = !1, this.options["sync disconnect on unload"] && (!this.isXDomain() || t.util.ua.hasCORS)) {
-  var o = this;
-  t.util.on(n, "beforeunload", function () {
-    o.disconnectSync()
-  }, !1)
-}
-this.options["auto connect"] && this.connect()
-}
+                  var o = this;
+                  t.util.on(n, "beforeunload", function () {
+                    o.disconnectSync()
+                  }, !1)
+                }
+                this.options["auto connect"] && this.connect()
+              }
 
-function i() {}
-e.Socket = o, t.util.mixin(o, t.EventEmitter), o.prototype.of = function (e) {
-  return this.namespaces[e] || (this.namespaces[e] = new t.SocketNamespace(this, e), "" !== e && this.namespaces[e].packet({
-    type: "connect"
-  })), this.namespaces[e]
-}, o.prototype.publish = function () {
-  this.emit.apply(this, arguments);
-  var e;
-  for (var t in this.namespaces) this.namespaces.hasOwnProperty(t) && (e = this.of(t), e.$emit.apply(e, arguments))
-}, o.prototype.handshake = function (e) {
-  function n(t) {
-    t instanceof Error ? (o.connecting = !1, o.onError(t.message)) : e.apply(null, t.split(":"))
-  }
-  var o = this,
-  r = this.options,
-  s = ["http" + (r.secure ? "s" : "") + ":/", r.host + ":" + r.port, r.resource, t.protocol, t.util.query(this.options.query, "t=" + +new Date)].join("/");
-  if (this.isXDomain() && !t.util.ua.hasCORS) {
-    var a = document.getElementsByTagName("script")[0],
-    c = document.createElement("script");
-    c.src = s + "&jsonp=" + t.j.length, a.parentNode.insertBefore(c, a), t.j.push(function (e) {
-      n(e), c.parentNode.removeChild(c)
-    })
-  } else {
-    var p = t.util.request();
-    p.open("GET", s, !0), this.isXDomain() && (p.withCredentials = !0), p.onreadystatechange = function () {
-      4 == p.readyState && (p.onreadystatechange = i, 200 == p.status ? n(p.responseText) : 403 == p.status ? o.onError(p.responseText) : (o.connecting = !1, !o.reconnecting && o.onError(p.responseText)))
-    }, p.send(null)
-  }
-}, o.prototype.getTransport = function (e) {
-  for (var n, o = e || this.transports, i = 0; n = o[i]; i++)
-    if (t.Transport[n] && t.Transport[n].check(this) && (!this.isXDomain() || t.Transport[n].xdomainCheck(this))) return new t.Transport[n](this, this.sessionid);
-  return null
-}, o.prototype.connect = function (e) {
-  if (this.connecting) return this;
-  var n = this;
-  return n.connecting = !0, this.handshake(function (o, i, r, s) {
-    function a(e) {
-      return n.transport && n.transport.clearTimeouts(), n.transport = n.getTransport(e), n.transport ? (n.transport.ready(n, function () {
-        n.connecting = !0, n.publish("connecting", n.transport.name), n.transport.open(), n.options["connect timeout"] && (n.connectTimeoutTimer = setTimeout(function () {
-          if (!n.connected && (n.connecting = !1, n.options["try multiple transports"])) {
-            for (var e = n.transports; e.length > 0 && e.splice(0, 1)[0] != n.transport.name;);
-              e.length ? a(e) : n.publish("connect_failed")
-          }
-        }, n.options["connect timeout"]))
-      }), void 0) : n.publish("connect_failed")
-    }
-    n.sessionid = o, n.closeTimeout = 1e3 * r, n.heartbeatTimeout = 1e3 * i, n.transports || (n.transports = n.origTransports = s ? t.util.intersect(s.split(","), n.options.transports) : n.options.transports), n.setHeartbeatTimeout(), a(n.transports), n.once("connect", function () {
-      clearTimeout(n.connectTimeoutTimer), e && "function" == typeof e && e()
-    })
-  }), this
+              function i() {}
+              e.Socket = o, t.util.mixin(o, t.EventEmitter), o.prototype.of = function (e) {
+                return this.namespaces[e] || (this.namespaces[e] = new t.SocketNamespace(this, e), "" !== e && this.namespaces[e].packet({
+                  type: "connect"
+                })), this.namespaces[e]
+              }, o.prototype.publish = function () {
+                this.emit.apply(this, arguments);
+                var e;
+                for (var t in this.namespaces) this.namespaces.hasOwnProperty(t) && (e = this.of(t), e.$emit.apply(e, arguments))
+              }, o.prototype.handshake = function (e) {
+                function n(t) {
+                  t instanceof Error ? (o.connecting = !1, o.onError(t.message)) : e.apply(null, t.split(":"))
+                }
+                var o = this,
+                r = this.options,
+                s = ["http" + (r.secure ? "s" : "") + ":/", r.host + ":" + r.port, r.resource, t.protocol, t.util.query(this.options.query, "t=" + +new Date)].join("/");
+                if (this.isXDomain() && !t.util.ua.hasCORS) {
+                  var a = document.getElementsByTagName("script")[0],
+                  c = document.createElement("script");
+                  c.src = s + "&jsonp=" + t.j.length, a.parentNode.insertBefore(c, a), t.j.push(function (e) {
+                    n(e), c.parentNode.removeChild(c)
+                  })
+                } else {
+                  var p = t.util.request();
+                  p.open("GET", s, !0), this.isXDomain() && (p.withCredentials = !0), p.onreadystatechange = function () {
+                    4 == p.readyState && (p.onreadystatechange = i, 200 == p.status ? n(p.responseText) : 403 == p.status ? o.onError(p.responseText) : (o.connecting = !1, !o.reconnecting && o.onError(p.responseText)))
+                  }, p.send(null)
+                }
+              }, o.prototype.getTransport = function (e) {
+                for (var n, o = e || this.transports, i = 0; n = o[i]; i++)
+                  if (t.Transport[n] && t.Transport[n].check(this) && (!this.isXDomain() || t.Transport[n].xdomainCheck(this))) return new t.Transport[n](this, this.sessionid);
+                return null
+              }, o.prototype.connect = function (e) {
+                if (this.connecting) return this;
+                var n = this;
+                return n.connecting = !0, this.handshake(function (o, i, r, s) {
+                  function a(e) {
+                    return n.transport && n.transport.clearTimeouts(), n.transport = n.getTransport(e), n.transport ? (n.transport.ready(n, function () {
+                      n.connecting = !0, n.publish("connecting", n.transport.name), n.transport.open(), n.options["connect timeout"] && (n.connectTimeoutTimer = setTimeout(function () {
+                        if (!n.connected && (n.connecting = !1, n.options["try multiple transports"])) {
+                          for (var e = n.transports; e.length > 0 && e.splice(0, 1)[0] != n.transport.name;);
+                            e.length ? a(e) : n.publish("connect_failed")
+                        }
+                      }, n.options["connect timeout"]))
+                    }), void 0) : n.publish("connect_failed")
+                  }
+                  n.sessionid = o, n.closeTimeout = 1e3 * r, n.heartbeatTimeout = 1e3 * i, n.transports || (n.transports = n.origTransports = s ? t.util.intersect(s.split(","), n.options.transports) : n.options.transports), n.setHeartbeatTimeout(), a(n.transports), n.once("connect", function () {
+                    clearTimeout(n.connectTimeoutTimer), e && "function" == typeof e && e()
+                  })
+                }), this
 }, o.prototype.setHeartbeatTimeout = function () {
   if (clearTimeout(this.heartbeatTimeoutTimer), !this.transport || this.transport.heartbeats()) {
     var e = this;

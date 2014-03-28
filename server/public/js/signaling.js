@@ -14,16 +14,15 @@ socket.on('readyToCall', function () {
 	RTCready = true;
 });
 
-function joinWebRTC (roomname, delay) {
+function joinWebRTC (delay) {
 	if(delay > 700)
-		return
+		socket.delayed();
 	else if(!RTCready)
-		setTimeout(joinWebRTC(roomname, delay * 2), delay );
+		setTimeout(joinWebRTC(delay * 2), delay );
 	else
-		socket.joinRoom(roomname);
+		socket.joinRoom();
 }
 
 function leaveWebRTC () {
-	if(RTCready)
-		socket.leaveRoom()
+	if(RTCready) socket.leaveRoom()
 }

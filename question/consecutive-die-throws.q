@@ -1,0 +1,8 @@
+{
+    "details": "<p>Let <var>n</var> be a positive integer.<br/>A 6-sided die is thrown <var>n</var> times. Let <var>c</var> be the number of pairs of consecutive throws that give the same value.</p><p>For example, if <var>n</var> = 7 and the values of the die throws are (1,1,5,6,6,6,3), then the following pairs of consecutive throws give the same value:<br/>(<u>1,1</u>,5,6,6,6,3)<br/>(1,1,5,<u>6,6</u>,6,3)<br/>(1,1,5,6,<u>6,6</u>,3)<br/>Therefore, <var>c</var> = 3 for (1,1,5,6,6,6,3).</p><p>Define C(<var>n</var>) as the number of outcomes of throwing a 6-sided die <var>n</var> times such that <var>c</var> does not exceed \u03c0(<var>n</var>).<sup>1</sup><br/>For example, C(3) = 216, C(4) = 1290, C(11) = 361912500 and C(24) = 4727547363281250000.</p><p>Define S(<var>L</var>) as <img alt=\"\u2211\" border=\"0\" height=\"14\" src=\"images/symbol_sum.gif\" style=\"vertical-align:middle;\" width=\"11\"/> C(<var>n</var>) for 1 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>n</var> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>L</var>.<br/>For example, S(50) mod 1\u00a0000\u00a0000\u00a0007 = 832833871.</p><p>Find S(50\u00a0000\u00a0000) mod 1\u00a0000\u00a0000\u00a0007.</p><p><sup>1</sup> \u03c0 denotes the <b>prime-counting function</b>, i.e. \u03c0(<var>n</var>) is the number of primes <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>n</var>.</p>",
+    "folder": "consecutive-die-throws",
+    "level": 1,
+    "random": 0.6063074000318889,
+    "tags": [],
+    "title": "Consecutive die throws"
+}

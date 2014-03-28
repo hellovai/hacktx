@@ -21,19 +21,34 @@ function join(socket) {
 
 function leave(socket, partner) {	
 	if(partner && socket.room == partner.room) {
+		partner.emit("remove", {
+			id: socket.id,
+			type: undefined
+		});
+		partner.emit("remove", {
+			id: partner.id,
+			type: undefined
+		});
+		socket.emit("remove", {
+			id: partner.id,
+			type: undefined
+		});
 		setUp(partner);
 		partner.emit("solo", false);
 	}
+	socket.emit("remove", {
+		id: socket.id,
+		type: undefined
+	});
 	setUp(socket);
 	socket.emit("solo", true);
 };
 
 function sendMessage(socket, message) {
 	var p = getPartner(socket.paired, socket.pid);
-	if(p) {
-		p.emit("updatechat", false, message);
-	}
-	socket.emit("updatechat", true, message);
+	if(p) 
+		p.emit("updateChat", false, message);
+	socket.emit("updateChat", true, message);
 };
 
 // local functions
@@ -41,6 +56,10 @@ function removeFeed(socket, partner, type) {
     partner.emit("remove", {
         id: socket.id,
         type: type
+    });
+    socket.emit("remove", {
+    	id: socket.id,
+    	type: type
     });
 };
 
@@ -53,15 +72,14 @@ function setUp (sock, part, room) {
 };
 
 function onJoin(err, socket, partner) {
-	if(err) socket.emit("notif", err);
-	else {
-		var room = rand.generateKey(config.roomKeyLen);
-		setUp(socket, partner, room);
-		setUp(partner, socket, room);
-		question.setQ(socket, partner);
-		socket.emit("match", partner.publicUser, room);
-		partner.emit("match", socket.publicUser, room);
-	}
+	if(err) return socket.emit("notif", err);
+	var room = rand.generateKey(config.roomKeyLen);
+	setUp(socket, partner, room);
+	setUp(partner, socket, room);
+	question.setQ(socket, partner);
+	socket.emit("match", partner.publicUser, room);
+	partner.emit("match", socket.publicUser, room);
+	partner.emit("findRoom");
 };
 
 function tryJoin(socket, thresh) {

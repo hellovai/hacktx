@@ -1,0 +1,8 @@
+{
+    "details": "<style type=\"text/css\">table.p375 td {  padding: 0px 3px 0px 3px;  vertical-align: bottom;  text-align: left;}</style><p>Let <var>S</var><sub><var>n</var></sub> be an integer sequence produced with the following pseudo-random number generator:</p><center><table class=\"p375\"><tr><td style=\"text-align:right\"><var>S</var><sub>0</sub></td><td>=<sub>\u00a0</sub></td><td>290797<sub>\u00a0</sub></td></tr><tr><td><var>S</var><sub><var>n</var>+1</sub></td><td>=<sub>\u00a0</sub></td><td><var>S</var><sub><var>n</var></sub><sup>2</sup> mod 50515093</td></tr></table></center><p>Let A(<var>i</var>, <var>j</var>) be the minimum of the numbers <var>S</var><sub><var>i</var></sub>, <var>S</var><sub><var>i</var>+1</sub>, ... , <var>S</var><sub><var>j</var></sub> for <var>i</var> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>j</var>.<br/>Let M(<var>N</var>) = \u03a3A(<var>i</var>, <var>j</var>) for 1 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>i</var> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>j</var> <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> <var>N</var>.<br/>We can verify that M(10) = 432256955 and M(10 000) = 3264567774119.</p><p>Find M(2 000 000 000).</p>",
+    "folder": "minimum-of-subsequences",
+    "level": 1,
+    "random": 0.9740421409407064,
+    "tags": [],
+    "title": "Minimum of subsequences"
+}

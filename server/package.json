@@ -6,15 +6,18 @@
     "start": "node session-server.js"
   },
   "dependencies": {
+    "fs": "latest",
     "generate-key": "latest",
-    "express": "latest",
-    "socket.io": "latest",
+    "express": "3.1.x",
+    "socket.io": "0.9.14",
     "socket.io-client": "latest",
     "node-uuid": "latest",
     "node-python":"latest",
     "octonode":"latest",
     "mongojs": "latest",
     "simplesets": "latest",
-    "session.socket.io": "latest"
+    "session.socket.io": "latest",
+    "connect":"latest",
+    "cookie":"latest"
   }
 }

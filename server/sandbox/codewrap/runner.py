@@ -40,7 +40,7 @@ class JailCodeHelpers(object):
 class Runner(JailCodeHelpers):
     """docstring for Runner"""
     def confine(self, runUser):
-        set_limit('VMEM', 10000)
+        set_limit('VMEM', 0)
         set_limit('CPU', 3)
         set_limit('REALTIME', 3)
         configure("python", "/usr/bin/python", user=runUser)

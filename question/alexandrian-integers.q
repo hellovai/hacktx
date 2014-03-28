@@ -1,0 +1,8 @@
+{
+    "details": "<p>We shall call a positive integer <var>A</var> an \"Alexandrian integer\", if there exist integers <var>p</var>, <var>q</var>, <var>r</var> such that:</p><table class=\"formula\" style=\"margin-left:50px;\"><tr><td><var>A</var> = <var>p</var> \u00b7 <var>q</var> \u00b7 <var>r</var> \u00a0\u00a0\u00a0and\u00a0\u00a0   </td><td><table class=\"frac\"><tr><td>1</td></tr><tr><td class=\"overline\"><var>A</var></td></tr></table></td><td>=</td><td><table class=\"frac\"><tr><td>1</td></tr><tr><td class=\"overline\"><var>p</var></td></tr></table></td><td>+</td><td><table class=\"frac\"><tr><td>1</td></tr><tr><td class=\"overline\"><var>q</var></td></tr></table></td><td>+</td><td><table class=\"frac\"><tr><td>1</td></tr><tr><td class=\"overline\"><var>r</var></td></tr></table></td></tr></table><p>For example, 630 is an Alexandrian integer (<var>p</var>\u00a0=\u00a05, <var>q</var>\u00a0=\u00a0<img alt=\"\u2212\" border=\"0\" height=\"3\" src=\"images/symbol_minus.gif\" style=\"vertical-align:middle;\" width=\"9\"/>7, <var>r</var>\u00a0=\u00a0<img alt=\"\u2212\" border=\"0\" height=\"3\" src=\"images/symbol_minus.gif\" style=\"vertical-align:middle;\" width=\"9\"/>18).In fact, 630 is the 6<sup>th</sup> Alexandrian integer,  the first 6 Alexandrian integers being: 6, 42, 120, 156, 420 and 630.</p><p>Find the 150000<sup>th</sup> Alexandrian integer.</p>",
+    "folder": "alexandrian-integers",
+    "level": 1,
+    "random": 0.7357523245234524,
+    "tags": [],
+    "title": "Alexandrian Integers"
+}

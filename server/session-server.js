@@ -1,129 +1,181 @@
-var http = require('http')
-  , path = require('path')
-  , connect = require('connect')
-  , express = require('express.io')
-  , qs = require('querystring')
-  , url = require('url')
+var http = require("http")
+  , path = require("path")
+  , connect = require("connect")
+  , express = require("express")
+  , qs = require("querystring")
+  , url = require("url")
+  , fs = require("fs")
   , app = express();
 
-var config = require('./config')
-  , globals = require('./globals')
-  , chat = require('./chat')
-  , question = require('./question')
-  , sandbox = require('./sandbox')
-  , github = require('./git');
+var config = require("./config")
+  , globals = require("./globals")
+  , chat = require("./chat")
+  , question = require("./question")
+  , sandbox = require("./sandbox")
+  , github = require("./git");
 
 var cookieParser = express.cookieParser(config.secret)
   , sessionStore = new connect.middleware.session.MemoryStore();
 
 app.configure(function () {
-  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + "/public"));
   app.use(cookieParser);
-  app.use(express.session({ store: sessionStore,
-    key: config.keyname
+  app.use(express.session({ 
+    store: sessionStore,
+    key: config.keyname,
+    secret: config.secret
    }));
-  app.use(function(req, res, next) {
-    res.on('header', function() {
-      console.trace('HEADERS GOING TO BE WRITTEN');
-    });
-    next();
-  });
 });
 
-// attempting with express.io
-app.http().io()
+var server = http.createServer(app)
+  , io = require("socket.io").listen(server);
 
 // for github authentication
 var state = github.auth_url.match(/&state=([0-9a-z]{32})/i);
 
-app.get('/', function(req, res) {
-  res.sendfile(__dirname + '/index.html');
+app.get("/", function(req, res) {
+  req.session.token = null;
+  res.sendfile(__dirname + "/index.html");
 });
 
-app.get('/login', function (req, res) {
-  res.statusCode = 301;
-  res.setHeader('Content-Type', 'text/plain');
-  res.setHeader('Location', github.auth_url);
-  res.end('Redirecting to ' + github.auth_url);
+app.get("/login", function (req, res) {
+    res.statusCode = 301;
+    res.setHeader("Content-Type", "text/plain");
+    res.redirect(github.auth_url);
 });
 
-app.get('/logout', function (req, res) {
-  delete req.session.token;
+app.get("/logout", function (req, res) {
+  setToken(null, req.sessionID);
   res.status(200);
-  res.setHeader('Content-Type', 'text/html');
-  res.sendfile(__dirname + '/autoClose.html');
-  res.end();
+  res.setHeader("Content-Type", "text/html");
+  res.clearCookie(config.tokenname);
+  res.sendfile(__dirname + "/autoClose.html");
 });
 
-app.get('/verify', function (req, res) {
+var cookie = require("cookie");
+
+app.get("/verify", function (req, res) {
   uri = url.parse(req.url);
   var values = qs.parse(uri.query);
   if (!state || state[1] != values.state) {
     res.status(403);
-    res.setHeader('Content-Type', 'text/html');
-    res.sendfile(__dirname + '/autoClose.html');
-    res.end();
+    res.setHeader("Content-Type", "text/html");
+    fs.readFile("./autoClose.html", "utf8", function (err,data) {
+      if (err) {
+        return res.end(err);
+      }
+      res.end(data);
+    });
   } else {
     github.api.auth.login(values.code, function (err, token) {
-      req.session.token = token
-      res.status(200)
-      res.setHeader('Content-Type', 'text/html');
-      res.sendfile(__dirname + '/autoClose.html');
-      res.end();
+      setToken(token, req.sessionID);
+      res.cookie(config.tokenname, token, {
+        signed:true
+        ,httpOnly:true
+      });
+      res.status(200).setHeader("Content-Type","text/html");
+      fs.readFile("./autoClose.html", "utf8", function (err,data) {
+        if (err) {
+          return res.end(err);
+        }
+        res.end(data);
+      });
     });
   }
 });
+
+function setToken(token, id) {
+  var items = sessionSocket[id];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    users[item].token = token;
+  };
+}
 
 var queue = globals.queue
   , users = globals.users
   , isConnected = globals.isConnected
   , getPartner = globals.getPartner
   , safeCb = globals.safeCallback
-  , removeQ = globals.removeQ;
+  , removeQ = globals.removeQ
+  , sessionSocket = globals.session;
 
 var connectionCtr = 0;
 
-app.io.on('connection', function (req) {
-  if(err) {
-    console.log(err);
-    return;
+io.configure(function () {
+  io.set("authorization", function (handshakeData, callback) {
+    var data = handshakeData;
+  if (data.headers.cookie) {
+    //note that this is done differently if using signed cookies
+    data.cookie = require("cookie").parse(data.headers.cookie);
+    data.sessionID = connect.utils.parseSignedCookie(handshakeData.cookie[config.keyname], config.secret);
+    if(config.tokenname in handshakeData.cookie)
+      data.token = connect.utils.parseSignedCookie(handshakeData.cookie[config.tokenname], config.secret);
+    else
+      data.token = null;
   }
-  console.log(session);
+    callback(null, true);
+  });
+});
+
+function describe(name) {
+    var clients = io.sockets.clients(name);
+    var result = {
+        clients: {}
+    };
+    clients.forEach(function (client) {
+        result.clients[client.id] = client.resources;
+    });
+    return result;
+}
+
+
+io.on("connection", function (socket) {
+  console.log("Connection est");
+  var session = socket.handshake;
   initialize();
   connectionCtr += 1;
 
-  socket.on('disconnect', function() {
+  socket.on("disconnect", function() {
     chat.leave(socket, getPartner(socket.paired, socket.pid));
     removeQ(socket.id)
+    var i = sessionSocket[socket.handshake.sessionID].indexOf(socket.id);
+    sessionSocket[socket.handshake.sessionID].splice(i, 1);
     delete users[socket.id];
     connectionCtr -= 1;
   });
 
   // room events
-  socket.on('toggleRoom', function () {
+  socket.on("toggleRoom", function () {
     var p = getPartner(socket.paired, socket.pid);
     if(typeof p != "undefined")
       chat.leave(socket, p);
     else if(socket.searching) {
       socket.searching = false;
       removeQ(socket.id);
+      socket.emit("notif", "Leaving the queue...");
     } else {
       chat.join(socket)
     }
-  })
-  .on('chat', function (msg) {
+  });
+  socket.on("chat", function (msg) {
     chat.sendMessage(socket, msg);
+  });
+  socket.on("reconnect", function () {
+    var p = getPartner(socket.paired, socket.pid);
+    if(p)
+      p.emit("findRoom");
   });
 
   // question events
-  socket.on('getQuestion', function () {
+  socket.on("getQuestion", function () {
     var p = getPartner(socket.paired, socket.pid);
     if(typeof p != "undefined") {
       if(socket.alertflags.cq) {
         socket.alertflags.cq = false;
         question.setQ(socket, p, true);
       } else {
-        p.emit('changeQuestion');
+        p.emit("changeQuestion");
         p.alertflags.cq = true;
       }
     } else 
@@ -131,71 +183,58 @@ app.io.on('connection', function (req) {
   });
 
   //code events
-  socket.on('change', function (diff) {
+  socket.on("change", function (diff) {
     var p = getPartner(socket.paired, socket.pid);
     if(typeof p != "undefined")
-      p.emit('updateCode', diff);
-  })
-  .on('run', function (code) {
+      p.emit("updateCode", diff);
+  });
+  socket.on("run", function (code) {
     sandbox.run(socket, code);
   });
 
   //git events
-  socket.on('login', function () {
-    github.login(socket, session);
-  })
-  .on('logout', function () {
-    github.logout(socket, session);
-  })
-  .on('save', function (code) {
+  socket.on("login", function () {
+    github.login(socket);
+  });
+  socket.on("logout", function () {
+    github.logout(socket);
+  });
+  socket.on("save", function (code) {
     if(socket.loggedIn)
-      socket.emit('notif', 'This feature is currently in progress!');
+      if(socket.isSaving)
+        socket.emit("notif", "Currently in the middle of saving!");
+      else
+        github.save(socket, code);
     else
-      socket.emit('notif', 'Please log in to save your work!');
+      socket.emit("notif", "Please log in to save your work!");
   });
 
   //webRTC
-   socket.on('message', function (details) {
-        var p = getPartner(socket.paired, socket.pid);
-        if (typeof p == "undefined") return;
+   socket.on("message", function (details) {
+        var reciever = socket.id == details.to ? socket : (socket.pid == details.to ? getPartner(socket.paired, socket.pid) : undefined);
+        if (!reciever) return;
         details.from = socket.id;
-        p.emit('message', details);
-    })
-    .on('join', join)
-    .on('leave', removeFeed)
-    .on('create', function (name, cb) {
+        reciever.emit("message", details);
+    });
+    socket.on("join", join);
+    socket.on("leave", function () {
+      console.log("leaving");
+    });
+    socket.on("create", function (name, cb) {
       name = uuid();
       if (io.sockets.clients(name).length) {
-        safeCb(cb)('taken');
+        safeCb(cb)("taken");
       } else {
         join(name);
         safeCb(cb)(null, name);
       }
     });
 
-    function removeFeed(type) {
+    function join(cb) {
       var p = getPartner(socket.paired, socket.pid);
-      if(p) 
-        p.emit('remove', {
-          id: socket.id,
-          type: type
-        });
-      // socket.emit('remove'm {
-      //   id: socket.id,
-      //   type: type
-      // });
-    };
-    function join(name, cb) {
-      var p = getPartner(socket.paired, socket.pid);
-      if(p) {  
-        var pid = p.id
-          , sid = socket.id;
-        var results = {
-          clients:{
-            pid : p.resources,
-            sid : socket.resources
-          }
-        }
+      if(p) {
+        var results = {clients:{}}
+        results.clients[p.id] = p.resources;
         safeCb(cb)(null, results);
       }
     };
@@ -204,25 +243,31 @@ app.io.on('connection', function (req) {
   function initialize() {
     socket.publicUser = config.defaultUser;
     socket.question = undefined;
-    socket.alertflags = {'cq':false};
+    socket.alertflags = {"cq":false};
     socket.searching = false;
     socket.paired = false;
-    socket.connection = {
-      room: '',
-      pid: undefined
-    };
+    socket.room = "";
+    socket.pid = undefined;
     socket.loggedIn = false;
     socket.user = {};
+    socket.isSaving = false;
     socket.resources = {
         screen: false,
         video: true,
         audio: false
     };
+    socket.token = session.token;
     users[socket.id] = socket;
-    if(session.token)
-      github.login(socket, session)
-    socket.emit('fireReady', connectionCtr);
+    
+    if(!sessionSocket[session.sessionID])
+      sessionSocket[session.sessionID] = [];
+    sessionSocket[session.sessionID].push(socket.id);
+    socket.emit("fireReady", connectionCtr);
+    if(socket.token) {
+      console.log("AUTO LOG: ", socket.token);
+      github.login(socket);
+    }
   }
 });
 
-app.listen(config.port);
+server.listen(config.port);

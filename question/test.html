@@ -1,0 +1,57 @@
+<!-- 
+
+
+
+
+	Constraints
+
+Sample Input: 40000
+Sample Output 40755
+
+Explanation:
+	All H<sub>141</sub> &le; 40000
+	T<sub>285</sub> = P<sub>165</sub> = H<sub>143</sub> = 40755
+</pre> -->
+
+<html>
+<head>
+	<title></title>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+
+</head>
+<body>
+<div style="width:299px; margin:50px">
+
+<p>Given an array of N words sorted lexographically, provide the alphabetic ordering used.</p>
+<p>For some letters it will not be possible to obtain any information on their position in the alphabet, in that case, skip them in your output</p>
+<p>If the array contains inconsistencies you should output a &quot;NO&quot;</p>
+
+<div class='q-info'>
+Input Format
+<pre>
+Line 1: N<br>Lines 2...N+1: each lines contains a word</pre>
+Constraints
+<pre>1 &le; N &le; 10<sup>25</sup></pre>
+Sample Input #1
+<pre>2<br>x156@<br/>x1$#2z</pre>
+Sample Output #1
+<pre>5 $</pre>
+Explanation
+<pre>x1 is the longest common substring
+5 appears before $ meaning it must be smaller</pre>
+Sample Input #2
+<pre>5<br>jhdsgf<br>19846<br>19846adlk<br>oi10123<br>oij(*#@&amp;$</pre>
+Sample Output #2
+<pre>NO</pre>
+Explanation
+<pre>From jhdsgf and 19846, j &lt; 1
+From oi10123 and oij(*#@&amp;$, 1 &lt; j</pre>
+</div>
+
+
+</div>
+</body>
+</html>
+

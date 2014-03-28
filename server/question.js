@@ -1,6 +1,7 @@
 var globals = require('./globals')
 	, db = require('./db')
 	, config = require('./config').question
+	, github = require('./git')
 	, set = require('simplesets');
 
 var queue = globals.queue
@@ -51,23 +52,29 @@ function findInDb(qId, socket, partner) {
 		});
 	} else {
 		if (Math.random() <= 0.5)
-			db.questions.findOne( { folder : {$nin: qId}
-				, random : { $gte : Math.random() } }
-				, function (err, res) {
-				if(res) {
-					sendQ(socket, res, partner);
+			db.questions.find( { folder : {$nin: qId}
+				, random : { $gte : Math.random() } })
+				.sort({random:1})
+				.limit(1, function (err, res) {
+				if(res.length > 0) {
+					sendQ(socket, res[0], partner);
 				} else {
-					findInDb([], socket, partner);
+					if(Math.random() < 0.10)
+						qId.splice(Math.floor(Math.random() * qId.length) , 1);
+					findInDb(qId, socket, partner);
 				}
 			});
 		else
-			db.questions.findOne( { folder : {$nin: qId}
-				, random : { $lte : Math.random() } }
-				, function (err, res) {
-				if(res) {
-					sendQ(socket, res, partner);
+			db.questions.find( { folder : {$nin: qId}
+				, random : { $lte : Math.random() } })
+				.sort({random:-1})
+				.limit(1, function (err, res) {
+				if(res.length > 0) {
+					sendQ(socket, res[0], partner);
 				} else {
-					findInDb([], socket, partner);
+					if(Math.random() < 0.10)
+						qId.splice(Math.floor(Math.random() * qId.length) , 1);
+					findInDb(qId, socket, partner);
 				}
 			});
 	}
@@ -80,17 +87,18 @@ function bestFit(rand, socket, partner) {
 	var partSeen = new set.Set([]);
 	var partFin = new set.Set([]);
 	if(socket.loggedIn) {
-		sockSeen.union( new set.Set(socket.user.db.questions.viewed) );
-		sockFin.union( new set.Set(socket.user.db.questions.finished) );
+		sockSeen = new set.Set(socket.user.db.questions.viewed);
+		sockFin = new set.Set(socket.user.db.questions.finished);
 	}
 	if(partner && partner.loggedIn) {
-		partSeen.union( new set.Set(partner.user.db.questions.viewed) );
-		partFin.union( new set.Set(partner.user.db.questions.finished) );
+		partSeen = new set.Set(partner.user.db.questions.viewed);
+		partFin = new set.Set(partner.user.db.questions.finished);
 	}
+
 	var fin = sockFin.union(partFin);
 	var sSeen = sockSeen.difference(fin);
 	var pSeen = partSeen.difference(fin);
-	
+
 	var bSeen = pSeen.intersection(sSeen).array();
 	if(!rand && bSeen.length > 0)
 		return bSeen[ Math.floor( Math.random() * bSeen.length ) ];
@@ -98,7 +106,7 @@ function bestFit(rand, socket, partner) {
 	var oSeen = pSeen.union(sSeen).array();
 	if(!rand && oSeen.length > 0)
 		return oSeen[ Math.floor( Math.random() * oSeen.length ) ];
-	
+
 	return fin.union(pSeen).union(sSeen).array();
 };
 
@@ -108,6 +116,7 @@ function sendQ(socket, q, p) {
 	socket.question = q.folder;
 	socket.emit('newQuestion', q.title, q.details);
 	if(socket.loggedIn) {
+		github.load(socket);
 		var i = socket.user.db.questions.viewed.indexOf(q.folder);
 		if( i == -1)
 			socket.user.db.questions.viewed.push(q.folder);

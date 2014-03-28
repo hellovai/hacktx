@@ -1,0 +1,8 @@
+{
+    "details": "<p>Let S(A) represent the sum of elements in set A of size <i>n</i>. We shall call it a special sum set if for any two non-empty disjoint subsets, B and C, the following properties are true:</p><ol style=\"list-style-type:lower-roman;\"><li>S(B) <img alt=\"\u2260\" border=\"0\" height=\"10\" src=\"images/symbol_ne.gif\" style=\"vertical-align:middle;\" width=\"11\"/> S(C); that is, sums of subsets cannot be equal.</li><li>If B contains more elements than C then S(B) <img alt=\"&gt;\" border=\"0\" height=\"10\" src=\"images/symbol_gt.gif\" style=\"vertical-align:middle;\" width=\"10\"/> S(C).</li></ol><p>For this problem we shall assume that a given set contains <i>n</i> strictly increasing elements and it already satisfies the second rule.</p><p>Surprisingly, out of the 25 possible subset pairs that can be obtained from a set for which <i>n</i> = 4, only 1 of these pairs need to be tested for equality (first rule). Similarly, when <i>n</i> = 7, only 70 out of the 966 subset pairs need to be tested.</p><p>For <i>n</i> = 12, how many of the 261625 subset pairs that can be obtained need to be tested for equality?</p><p class=\"info\">NOTE: This problem is related to problems <a href=\"index.php?section=problems&amp;id=103\">103</a> and <a href=\"index.php?section=problems&amp;id=105\">105</a>.</p>",
+    "folder": "special-subset-sums-meta-testi",
+    "level": 1,
+    "random": 0.8525377360701426,
+    "tags": [],
+    "title": "Special subset sums: meta-testing"
+}

@@ -2,10 +2,14 @@
 var globals = require('../globals')
 	,python = require('node-python');
 
-var queue = globals.queue;
-var users = globals.users;
-var isConnected = globals.isConnected;
 var config = require('../config').sandbox;
+
+var queue = globals.queue
+  , users = globals.users
+  , isConnected = globals.isConnected
+  , getPartner = globals.getPartner
+  , safeCb = globals.safeCallback
+  , removeQ = globals.removeQ;
 
 var os = python.import('os');
 var sys = python.import('sys');
@@ -20,8 +24,8 @@ var run = function (socket, code) {
 		result = pysand.Run( socket.question, code ).toString();
 	} else
 		result = '{"status":-1, "error":"Get a question first!"}';
-	if(isConnected(socket))
-		users[socket.pid].emit('runStatus', false, result );
+	var p = getPartner(socket.paired, socket.pid);
+	if(p) p.emit('runStatus', false, result );
 	socket.emit('runStatus', true, result );
 };
 

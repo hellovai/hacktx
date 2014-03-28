@@ -1,0 +1,8 @@
+{
+    "details": "<p>For any positive integer <var>n</var> the function next_prime(<var>n</var>) returns the smallest prime p <br/> such that p<img alt=\"&gt;\" border=\"0\" height=\"10\" src=\"images/symbol_gt.gif\" style=\"vertical-align:middle;\" width=\"10\"/><var>n</var>.</p><p>The sequence a(<var>n</var>) is defined by:<br/>a(1)=next_prime(10<sup>14</sup>) and a(<var>n</var>)=next_prime(a(<var>n</var>-1)) for n<img alt=\"&gt;\" border=\"0\" height=\"10\" src=\"images/symbol_gt.gif\" style=\"vertical-align:middle;\" width=\"10\"/>1.<p></p><p>The fibonacci sequence f(<var>n</var>) is defined by:f(0)=0, f(1)=1 and f(<var>n</var>)=f(<var>n</var>-1)+f(<var>n</var>-2) for <var>n</var><img alt=\"&gt;\" border=\"0\" height=\"10\" src=\"images/symbol_gt.gif\" style=\"vertical-align:middle;\" width=\"10\"/>1.</p><p>The sequence b(<var>n</var>) is defined as f(a(<var>n</var>)).</p><p>Find <img alt=\"\u2211\" border=\"0\" height=\"14\" src=\"images/symbol_sum.gif\" style=\"vertical-align:middle;\" width=\"11\"/>b(<var>n</var>) for 1<img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/><var>n</var><img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/>100 000. Give your answer mod 1234567891011. </p></p>",
+    "folder": "primonacci",
+    "level": 1,
+    "random": 0.37230446522781646,
+    "tags": [],
+    "title": "Primonacci"
+}

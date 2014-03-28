@@ -1,0 +1,8 @@
+{
+    "details": "<p>We can easily verify that none of the entries in the first seven rows of Pascal's triangle are divisible by 7:</p><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a01</td></tr><tr><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a01</td><td>\u00a0</td><td>\u00a01</td></tr><tr><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a01</td><td>\u00a0</td><td>\u00a02</td><td>\u00a0</td><td>\u00a01</td></tr><tr><td>\u00a0</td><td>\u00a0</td><td>\u00a0</td><td>\u00a01</td><td>\u00a0</td><td>\u00a03</td><td>\u00a0</td><td>\u00a03</td><td>\u00a0</td><td>\u00a01</td></tr><tr><td>\u00a0</td><td>\u00a0</td><td>\u00a01</td><td>\u00a0</td><td>\u00a04</td><td>\u00a0</td><td>\u00a06</td><td>\u00a0</td><td>\u00a04</td><td>\u00a0</td><td>\u00a01</td></tr><tr><td>\u00a0</td><td>\u00a01</td><td>\u00a0</td><td>\u00a05</td><td>\u00a0</td><td>10</td><td>\u00a0</td><td>10</td><td>\u00a0</td><td>\u00a05</td><td>\u00a0</td><td>\u00a01</td></tr><tr><td>1</td><td>\u00a0</td><td>\u00a06</td><td>\u00a0</td><td>15</td><td>\u00a0</td><td>20</td><td>\u00a0</td><td>15</td><td>\u00a0</td><td>\u00a06</td><td>\u00a0</td><td>\u00a01</td></tr></table><p>However, if we check the first one hundred rows, we will find that only 2361 of the 5050 entries are <i>not</i> divisible by 7.</p><p>Find the number of entries which are <i>not</i> divisible by 7 in the first one billion (10<sup>9</sup>) rows of Pascal's triangle.</p>",
+    "folder": "exploring-pascals-triangle",
+    "level": 1,
+    "random": 0.422647502024458,
+    "tags": [],
+    "title": "Exploring Pascal's triangle."
+}

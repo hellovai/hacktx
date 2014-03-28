@@ -1,0 +1,8 @@
+{
+    "details": "<p>The <strong>Fibonacci numbers</strong> {f<sub>n</sub>, n <img alt=\"\u2265\" border=\"0\" height=\"12\" src=\"images/symbol_ge.gif\" style=\"vertical-align:middle;\" width=\"10\"/> 0} are defined recursively as f<sub>n</sub> = f<sub>n-1</sub> + f<sub>n-2</sub> with base cases f<sub>0</sub> = 0 and f<sub>1</sub> = 1.</p><p>Define the polynomials {F<sub>n</sub>, n <img alt=\"\u2265\" border=\"0\" height=\"12\" src=\"images/symbol_ge.gif\" style=\"vertical-align:middle;\" width=\"10\"/> 0} as F<sub>n</sub>(x) = <img alt=\"\u2211\" border=\"0\" height=\"14\" src=\"images/symbol_sum.gif\" style=\"vertical-align:middle;\" width=\"11\"/>f<sub>i</sub>x<sup>i</sup> for 0 <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> i <img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/> n.</p><p>For example, F<sub>7</sub>(x) = x + x<sup>2</sup> + 2x<sup>3</sup> + 3x<sup>4</sup> + 5x<sup>5</sup> + 8x<sup>6</sup> + 13x<sup>7</sup>, and F<sub>7</sub>(11) = 268357683.</p><p>Let n = 10<sup>15</sup>. Find the sum [<img alt=\"\u2211\" border=\"0\" height=\"14\" src=\"images/symbol_sum.gif\" style=\"vertical-align:middle;\" width=\"11\"/><sub>0<img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/>x<img alt=\"\u2264\" border=\"0\" height=\"12\" src=\"images/symbol_le.gif\" style=\"vertical-align:middle;\" width=\"10\"/>100</sub> F<sub>n</sub>(x)] mod 1307674368000 (= 15!).</p>",
+    "folder": "polynomials-of-fibonacci-numbe",
+    "level": 1,
+    "random": 0.2872229132133013,
+    "tags": [],
+    "title": "Polynomials of Fibonacci numbers"
+}
